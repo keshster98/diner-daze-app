@@ -1,4 +1,4 @@
-package com.keshen.dinerdazeapp.data.model
+package com.keshen.dinerdazeapp.service
 
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.tasks.await

@@ -1,7 +1,7 @@
 package com.keshen.dinerdazeapp.core.di
 
 import com.google.firebase.auth.FirebaseAuth
-import com.keshen.dinerdazeapp.data.model.AuthService
+import com.keshen.dinerdazeapp.service.AuthService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
