@@ -33,15 +33,16 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.keshen.dinerdazeapp.core.utils.MessageType
 
 @Composable
-fun SignInScreen(
-    onSuccess: (Boolean) -> Unit,
-    onSignUpClick: () -> Unit,
-    viewModel: SignInViewModel = hiltViewModel()
+fun SignUpScreen(
+    onSuccess: () -> Unit,
+    onSignInClick: () -> Unit,
+    viewModel: SignUpViewModel = hiltViewModel()
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var confirmPassword by remember { mutableStateOf("") }
 
-    val isSigningIn by viewModel.isSigningIn.collectAsState()
+    val isSigningUp by viewModel.isSigningUp.collectAsState()
     val message by viewModel.message.collectAsState()
 
     Box(
@@ -54,8 +55,9 @@ fun SignInScreen(
                 .padding(horizontal = 32.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+
             Text(
-                text = "Sign In",
+                text = "Sign Up",
                 fontSize = 24.sp,
                 style = MaterialTheme.typography.headlineSmall
             )
@@ -67,7 +69,7 @@ fun SignInScreen(
                 onValueChange = { email = it },
                 label = { Text("Email") },
                 modifier = Modifier.fillMaxWidth(),
-                enabled = !isSigningIn
+                enabled = !isSigningUp
             )
 
             Spacer(Modifier.height(12.dp))
@@ -78,7 +80,18 @@ fun SignInScreen(
                 label = { Text("Password") },
                 visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier.fillMaxWidth(),
-                enabled = !isSigningIn
+                enabled = !isSigningUp
+            )
+
+            Spacer(Modifier.height(12.dp))
+
+            OutlinedTextField(
+                value = confirmPassword,
+                onValueChange = { confirmPassword = it },
+                label = { Text("Confirm Password") },
+                visualTransformation = PasswordVisualTransformation(),
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !isSigningUp
             )
 
             Spacer(Modifier.height(20.dp))
@@ -94,9 +107,9 @@ fun SignInScreen(
                             shape = MaterialTheme.shapes.medium
                         )
                         .border(
-                            width = 1.dp,
-                            color = if (isError) Color(0xFFD32F2F) else Color(0xFF388E3C),
-                            shape = MaterialTheme.shapes.medium
+                            1.dp,
+                            if (isError) Color(0xFFD32F2F) else Color(0xFF388E3C),
+                            MaterialTheme.shapes.medium
                         )
                         .padding(12.dp)
                 ) {
@@ -104,8 +117,7 @@ fun SignInScreen(
                         text = uiMessage.text,
                         color = if (isError) Color(0xFFD32F2F) else Color(0xFF388E3C),
                         textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth(),
-                        style = MaterialTheme.typography.bodyMedium
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
 
@@ -113,34 +125,35 @@ fun SignInScreen(
             }
 
             Button(
-                enabled = !isSigningIn,
+                enabled = !isSigningUp,
                 onClick = {
-                    viewModel.signIn(
+                    viewModel.signUp(
                         email = email,
                         password = password,
+                        confirmPassword = confirmPassword,
                         onSuccess = onSuccess
                     )
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                if (isSigningIn) {
+                if (isSigningUp) {
                     CircularProgressIndicator(
                         modifier = Modifier.size(20.dp),
                         strokeWidth = 2.dp,
                         color = MaterialTheme.colorScheme.onPrimary
                     )
                 } else {
-                    Text("Sign In")
+                    Text("Sign Up")
                 }
             }
 
             Spacer(Modifier.height(16.dp))
 
             TextButton(
-                enabled = !isSigningIn,
-                onClick = onSignUpClick
+                enabled = !isSigningUp,
+                onClick = onSignInClick
             ) {
-                Text("Don't have an account yet? Sign Up")
+                Text("Already have an account? Sign In")
             }
         }
     }

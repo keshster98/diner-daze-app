@@ -21,4 +21,17 @@ class UserProfileService(
         return doc.toObject(User::class.java)
             ?: throw IllegalStateException("Failed to parse profile")
     }
+
+    // Get the first name of the currently signed in user (returns email as a failsafe)
+    suspend fun getUserFirstName(uid: String, email: String): String {
+        val doc = db.collection("users").document(uid).get().await()
+        val firstName = doc.getString("firstName")
+        return firstName?.takeIf { it.isNotBlank() } ?: email
+    }
+
+    // Check if the profile of the current signed in user has been completely filled
+    suspend fun isProfileCompleted(uid: String): Boolean {
+        val doc = db.collection("users").document(uid).get().await()
+        return doc.exists() && doc.getBoolean("completed") == true
+    }
 }

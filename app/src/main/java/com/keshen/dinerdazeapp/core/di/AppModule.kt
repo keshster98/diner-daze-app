@@ -1,7 +1,9 @@
 package com.keshen.dinerdazeapp.core.di
 
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.keshen.dinerdazeapp.service.AuthService
+import com.keshen.dinerdazeapp.service.UserProfileService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -23,4 +25,16 @@ object AppModule {
         auth: FirebaseAuth
     ): AuthService =
         AuthService(auth)
+
+    @Provides
+    @Singleton
+    fun provideFirestore(): FirebaseFirestore =
+        FirebaseFirestore.getInstance()
+
+    @Provides
+    @Singleton
+    fun provideUserProfileService(
+        firestore: FirebaseFirestore
+    ): UserProfileService =
+        UserProfileService(firestore)
 }

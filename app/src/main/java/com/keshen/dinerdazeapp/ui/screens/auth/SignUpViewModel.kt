@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.keshen.dinerdazeapp.core.utils.MessageType
 import com.keshen.dinerdazeapp.core.utils.UiMessage
 import com.keshen.dinerdazeapp.service.AuthService
-import com.keshen.dinerdazeapp.service.UserProfileService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,62 +13,66 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class SignInViewModel @Inject constructor(
-    private val authService: AuthService,
-    private val profileService: UserProfileService
+class SignUpViewModel @Inject constructor(
+    private val authService: AuthService
 ) : ViewModel() {
 
-    private val _isSigningIn = MutableStateFlow(false)
-    val isSigningIn = _isSigningIn.asStateFlow()
+    private val _isSigningUp = MutableStateFlow(false)
+    val isSigningUp = _isSigningUp.asStateFlow()
 
     private val _message = MutableStateFlow<UiMessage?>(null)
     val message = _message.asStateFlow()
 
-    fun signIn(
+    fun signUp(
         email: String,
         password: String,
-        onSuccess: (Boolean) -> Unit
+        confirmPassword: String,
+        onSuccess: () -> Unit
     ) {
         _message.value = null
-        _isSigningIn.value = true
+        _isSigningUp.value = true
 
-        if (email.isBlank() || password.isBlank()) {
-            _message.value = UiMessage(
-                "Email and/or password cannot be empty!",
-                MessageType.ERROR
-            )
-            clearMessage()
-            return
+        when {
+            email.isBlank() || password.isBlank() || confirmPassword.isBlank() -> {
+                _message.value = UiMessage(
+                    "All fields are required",
+                    MessageType.ERROR
+                )
+                clearMessage()
+                return
+            }
+
+            password != confirmPassword -> {
+                _message.value = UiMessage(
+                    "Passwords do not match",
+                    MessageType.ERROR
+                )
+                clearMessage()
+                return
+            }
         }
 
-        performSignIn(email, password, onSuccess)
+        performSignUp(email, password, onSuccess)
     }
 
-    private fun performSignIn(
+    private fun performSignUp(
         email: String,
         password: String,
-        onSuccess: (Boolean) -> Unit
+        onSuccess: () -> Unit
     ) {
         viewModelScope.launch {
             runCatching {
-                authService.signIn(email, password)
-
-                val uid = authService.uid()
-                val name = profileService.getUserFirstName(uid, email)
-                val completed = profileService.isProfileCompleted(uid)
-
-                name to completed
-            }.onSuccess { (name, completed) ->
+                authService.signUp(email, password)
+            }.onSuccess {
                 _message.value = UiMessage(
-                    "Success! Signing you in, $name",
+                    "Account created successfully! Redirecting you to the registration form",
                     MessageType.SUCCESS
                 )
-
                 delay(2000)
-                onSuccess(completed)
+                onSuccess()
             }.onFailure {
                 _message.value = UiMessage(
-                    it.message ?: "Something went wrong. Please try again.",
+                    it.message ?: "Sign up failed. Please try again.",
                     MessageType.ERROR
                 )
                 clearMessage()
@@ -81,7 +84,7 @@ class SignInViewModel @Inject constructor(
         viewModelScope.launch {
             delay(2000)
             _message.value = null
-            _isSigningIn.value = false
+            _isSigningUp.value = false
         }
     }
 }
