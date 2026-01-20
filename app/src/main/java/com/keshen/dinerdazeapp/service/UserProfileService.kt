@@ -30,8 +30,18 @@ class UserProfileService(
     }
 
     // Check if the profile of the current signed in user has been completely filled
-    suspend fun isProfileCompleted(uid: String): Boolean {
+    suspend fun isProfileFilled(uid: String): Boolean {
         val doc = db.collection("users").document(uid).get().await()
-        return doc.exists() && doc.getBoolean("completed") == true
+        return doc.exists() && doc.getBoolean("profileFilled") == true
     }
+
+    // Save the profile of the current user after they've submitted their registration form
+    suspend fun saveProfile(profile: User) {
+        db.collection("users")
+            .document(profile.uid)
+            .set(profile)
+            .await()
+    }
+
+
 }

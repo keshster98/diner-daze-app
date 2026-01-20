@@ -56,7 +56,7 @@ class SignInViewModel @Inject constructor(
 
                 val uid = authService.uid()
                 val name = profileService.getUserFirstName(uid, email)
-                val completed = profileService.isProfileCompleted(uid)
+                val completed = profileService.isProfileFilled(uid)
 
                 name to completed
             }.onSuccess { (name, completed) ->

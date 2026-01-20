@@ -4,7 +4,7 @@ data class User (
     // Firebase details
     val uid: String = "",
     val role: Role = Role.USER,
-    val profileFilled: Boolean = true,
+    val profileFilled: Boolean = false,
     val createdAt: Long = System.currentTimeMillis(),
     val updatedAt: Long = System.currentTimeMillis(),
 
@@ -29,9 +29,9 @@ enum class Gender {
 }
 
 enum class Diet {
-    ANY, VEGETARIAN, NONVEGETARIAN
+    ANY, VEGETARIAN, NON_VEGETARIAN
 }
 
 enum class Spiciness {
-    ANY, SPICY, NONSPICY
+    ANY, SPICY, NON_SPICY
 }
