@@ -24,12 +24,16 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun loadUserName() {
-        viewModelScope.launch {
-            val name = profileService.getUserFirstName(
-                uid = authService.uid(),
-                email = authService.email()
-            )
-            _displayName.value = name
+        if (!authService.isLoggedIn()) {
+            return
+        } else {
+            viewModelScope.launch {
+                val name = profileService.getUserFirstName(
+                    uid = authService.uid(),
+                    email = authService.email()
+                )
+                _displayName.value = name
+            }
         }
     }
 

@@ -1,10 +1,11 @@
-package com.keshen.dinerdazeapp.ui.screens.auth
+package com.keshen.dinerdazeapp.ui.screens.registration
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.keshen.dinerdazeapp.core.utils.MessageType
 import com.keshen.dinerdazeapp.core.utils.UiMessage
 import com.keshen.dinerdazeapp.data.model.User
+import com.keshen.dinerdazeapp.service.AuthService
 import com.keshen.dinerdazeapp.service.UserProfileService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -15,6 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RegistrationViewModel @Inject constructor(
+    private val authService: AuthService,
     private val profileService: UserProfileService
 ) : ViewModel() {
 
@@ -32,11 +34,15 @@ class RegistrationViewModel @Inject constructor(
         _isSubmitting.value = true
 
         if (!isValid(user)) {
-            showError("Please fill in all required fields.")
+            showError("Please fill in all fields!")
             return
         }
 
         saveProfile(user, onSuccess)
+    }
+
+    fun logout() {
+        authService.signOut()
     }
 
     private fun saveProfile(

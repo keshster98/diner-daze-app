@@ -1,12 +1,15 @@
 package com.keshen.dinerdazeapp.data.model
 
+import androidx.navigation.compose.composable
+import com.keshen.dinerdazeapp.ui.navigation.Screen
+
 data class User (
     // Firebase details
     val uid: String = "",
     val role: Role = Role.USER,
     val profileFilled: Boolean = false,
     val createdAt: Long = System.currentTimeMillis(),
-    val updatedAt: Long = System.currentTimeMillis(),
+    val updatedAt: Long? = null,
 
     // Personal details
     val firstName: String = "",

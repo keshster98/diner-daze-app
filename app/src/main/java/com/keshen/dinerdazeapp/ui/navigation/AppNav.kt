@@ -1,107 +1,227 @@
 package com.keshen.dinerdazeapp.ui.navigation
 
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Login
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.RestaurantMenu
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.keshen.dinerdazeapp.service.AuthService
 import com.keshen.dinerdazeapp.service.UserProfileService
-import com.keshen.dinerdazeapp.ui.screens.auth.RegistrationFormScreen
 import com.keshen.dinerdazeapp.ui.screens.auth.SignInScreen
 import com.keshen.dinerdazeapp.ui.screens.auth.SignUpScreen
 import com.keshen.dinerdazeapp.ui.screens.home.HomeScreen
+import com.keshen.dinerdazeapp.ui.screens.menu.MenuScreen
+import com.keshen.dinerdazeapp.ui.screens.profile.ProfileScreen
+import com.keshen.dinerdazeapp.ui.screens.registration.RegistrationFormScreen
+import com.keshen.dinerdazeapp.ui.screens.settings.SettingsScreen
 
 @Composable
 fun AppNav(
     authService: AuthService,
     profileService: UserProfileService
 ) {
-    val rootNavController = rememberNavController()
+    val navController = rememberNavController()
 
-    LaunchedEffect(key1 = authService.isLoggedIn()) {
-        if (authService.isLoggedIn()) {
+    val uid by authService.uidFlow.collectAsState()
+    var isProfileFilled by remember { mutableStateOf<Boolean?>(null) }
 
-            val uid = authService.uid()
-            val completed = profileService.isProfileFilled(uid)
-
-            val destination = if (completed) {
-                Screen.Home
-            } else {
-                Screen.RegistrationForm
+    LaunchedEffect(uid) {
+        isProfileFilled =
+            if (uid != null) {
+                profileService.isProfileFilled(authService.uid())
             }
-
-            rootNavController.navigate(destination) {
-                popUpTo(rootNavController.graph.startDestinationId) {
-                    inclusive = true
-                }
-                launchSingleTop = true
+            else {
+                null
             }
-
-        } else {
-            rootNavController.navigate(Screen.SignIn) {
-                popUpTo(rootNavController.graph.startDestinationId) {
-                    inclusive = true
-                }
-                launchSingleTop = true
-            }
-        }
     }
 
-    NavHost(
-        navController = rootNavController,
-        startDestination = Screen.SignIn
+    Scaffold(
+        bottomBar = {
+            NavigationBar {
+                val backStack by navController.currentBackStackEntryAsState()
+                val currentRoute = backStack?.destination?.route
+
+                // Home Tab
+                NavigationBarItem(
+                    selected = currentRoute == Screen.Home::class.qualifiedName,
+                    onClick = {
+                        navController.navigate(Screen.Home) {
+                            launchSingleTop = true
+                        }
+                    },
+                    icon = { Icon(Icons.Filled.Home, null) },
+                    label = { Text("Home") }
+                )
+
+                // Menu Tab
+                NavigationBarItem(
+                    selected = currentRoute == Screen.Menu::class.qualifiedName,
+                    onClick = {
+                        navController.navigate(Screen.Menu) {
+                            launchSingleTop = true
+                        }
+                    },
+                    icon = { Icon(Icons.Filled.RestaurantMenu, null) },
+                    label = { Text("Menu") }
+                )
+
+                // Profile and Settings Tab
+                if (uid != null && isProfileFilled == true) {
+                    NavigationBarItem(
+                        selected = currentRoute == Screen.Profile::class.qualifiedName,
+                        onClick = {
+                            navController.navigate(Screen.Profile) {
+                                launchSingleTop = true
+                            }
+                        },
+                        icon = { Icon(Icons.Filled.Person, null) },
+                        label = { Text("Profile") }
+                    )
+
+                    NavigationBarItem(
+                        selected = currentRoute == Screen.Settings::class.qualifiedName,
+                        onClick = {
+                            navController.navigate(Screen.Settings) {
+                                launchSingleTop = true
+                            }
+                        },
+                        icon = { Icon(Icons.Filled.Settings, null) },
+                        label = { Text("Settings") }
+                    )
+                }
+
+                // Access Tab (Sign In / Sign Up / Registration Form)
+                if (isProfileFilled != true) {
+                    NavigationBarItem(
+                        selected =
+                            currentRoute == Screen.SignIn::class.qualifiedName ||
+                                    currentRoute == Screen.SignUp::class.qualifiedName ||
+                                    currentRoute == Screen.RegistrationForm::class.qualifiedName,
+                        onClick = {
+                            val destination = when {
+                                uid == null ->
+                                    Screen.SignIn
+
+                                isProfileFilled != true ->
+                                    Screen.RegistrationForm
+
+                                else ->
+                                    Screen.SignIn // defensive fallback
+                            }
+
+                            navController.navigate(destination) {
+                                launchSingleTop = true
+                            }
+                        },
+                        icon = { Icon(Icons.Filled.Login, null) },
+                        label = { Text("Access App") }
+                    )
+                }
+            }
+        }
+    ) { padding ->
+        NavHost(
+            navController = navController,
+            startDestination = Screen.Home,
+            modifier = Modifier.padding(padding)
         ) {
 
-        composable<Screen.Home> {
-            HomeScreen(
-                onSignOutClick = {
-                    rootNavController.navigate(Screen.SignIn) {
-                        popUpTo(Screen.Home) {
-                            inclusive = true
+            composable<Screen.Home> {
+                HomeScreen(
+                    authService = authService,
+                    onSignOutClick = {
+                        navController.navigate(Screen.SignIn) {
+                            popUpTo(Screen.Home) {
+                                inclusive = true
+                            }
                         }
                     }
-                }
-            )
-        }
+                )
+            }
 
-        composable<Screen.RegistrationForm> {
-            RegistrationFormScreen(
-                authService = authService,
-                onCompleted = {
-                    rootNavController.navigate(Screen.Home) {
-                        popUpTo(Screen.RegistrationForm) { inclusive = true }
-                    }
-                }
-            )
-        }
+            composable<Screen.Menu> {
+                MenuScreen(navController)
+            }
 
-        composable<Screen.SignIn> {
-            SignInScreen(
-                onSuccess = { completed ->
-                    rootNavController.navigate(
-                        if (completed) Screen.Home else Screen.RegistrationForm
-                    ) {
-                        popUpTo(Screen.SignIn) { inclusive = true }
+            composable<Screen.SignIn> {
+                SignInScreen(
+                    onSuccess = { completed ->
+                        if (completed) {
+                            navController.navigate(Screen.Home) {
+                                popUpTo(Screen.SignIn) { inclusive = true }
+                            }
+                        } else {
+                            navController.navigate(Screen.RegistrationForm)
+                        }
+                    },
+                    onSignUpClick = {
+                        navController.navigate(Screen.SignUp)
                     }
-                },
-                onSignUpClick = {
-                    rootNavController.navigate(Screen.SignUp)
-                }
-            )
-        }
+                )
+            }
 
-        composable<Screen.SignUp> {
-            SignUpScreen(
-                onSuccess = {
-                    rootNavController.navigate(Screen.SignIn) {
-                        popUpTo(Screen.SignUp) { inclusive = true }
+            composable<Screen.SignUp> {
+                SignUpScreen(
+                    onSuccess = {
+                        navController.navigate(Screen.RegistrationForm)
+                    },
+                    onSignInClick = {
+                        navController.navigate(Screen.SignIn)
                     }
-                },
-                onSignInClick = {
-                    rootNavController.navigate(Screen.SignIn)
-                }
-            )
+                )
+            }
+
+            composable<Screen.RegistrationForm> {
+                RegistrationFormScreen(
+                    authService = authService,
+                    onCompleted = {
+                        isProfileFilled = true
+
+                        navController.navigate(Screen.Home) {
+                            popUpTo(Screen.RegistrationForm) { inclusive = true }
+                        }
+                    },
+                    onLoggedOut = {
+                        navController.navigate(Screen.SignIn) {
+                            popUpTo(Screen.RegistrationForm) { inclusive = true }
+                        }
+                    }
+                )
+            }
+
+            composable<Screen.Profile> {
+                ProfileScreen(
+                    navController,
+                    authService,
+                    profileService
+                )
+            }
+
+            composable<Screen.Settings> {
+                SettingsScreen(
+                    navController,
+                    authService = authService
+                )
+            }
         }
     }
 }

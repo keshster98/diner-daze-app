@@ -14,13 +14,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.keshen.dinerdazeapp.service.AuthService
 
 @Composable
 fun HomeScreen(
+    authService: AuthService,
     viewModel: HomeViewModel = hiltViewModel(),
     onSignOutClick: () -> Unit
 ) {
-    val displayName by viewModel.displayName.collectAsState()
+    // val displayName by viewModel.displayName.collectAsState()
 
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -31,17 +33,19 @@ fun HomeScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(
-                text = "Welcome, $displayName!",
+                text = "Welcome to the home screen!",
                 style = MaterialTheme.typography.headlineSmall
             )
 
-            Button(
-                onClick = {
-                    viewModel.signOut()
-                    onSignOutClick()
+            if (authService.isLoggedIn()) {
+                Button(
+                    onClick = {
+                        viewModel.signOut()
+                        onSignOutClick()
+                    }
+                ) {
+                    Text("Sign Out")
                 }
-            ) {
-                Text("Sign Out")
             }
         }
     }

@@ -1,16 +1,17 @@
-package com.keshen.dinerdazeapp.ui.screens.auth
+package com.keshen.dinerdazeapp.ui.screens.registration
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -39,6 +40,7 @@ import com.keshen.dinerdazeapp.ui.components.SectionTitle
 fun RegistrationFormScreen(
     authService: AuthService,
     onCompleted: () -> Unit,
+    onLoggedOut: () -> Unit,
     viewModel: RegistrationViewModel = hiltViewModel()
 ) {
     val uid = authService.uid()
@@ -154,28 +156,46 @@ fun RegistrationFormScreen(
         }
 
         item {
-            Button(
+            Row(
                 modifier = Modifier.fillMaxWidth(),
-                enabled = !isSubmitting,
-                onClick = {
-
-                    val user = User(
-                        uid = uid,
-                        firstName = firstName,
-                        lastName = lastName,
-                        gender = gender ?: Gender.PREFER_NOT_TO_SAY,
-                        email = email,
-                        phone = phone,
-                        diet = diet ?: Diet.ANY,
-                        spiciness = spiciness ?: Spiciness.ANY,
-                        profileFilled = true
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                OutlinedButton(
+                    modifier = Modifier.weight(1f),
+                    onClick = {
+                        viewModel.logout()
+                        onLoggedOut()
+                    },
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = Color(0xFFB56576)
                     )
-
-                    viewModel.submitRegistration(user, onCompleted)
+                ) {
+                    Text("Log Out")
                 }
-            )
-            {
-                Text("Submit Registration")
+
+                Button(
+                    modifier = Modifier.weight(1f),
+                    enabled = !isSubmitting,
+                    onClick = {
+
+                        val user = User(
+                            uid = uid,
+                            firstName = firstName,
+                            lastName = lastName,
+                            gender = gender ?: Gender.PREFER_NOT_TO_SAY,
+                            email = email,
+                            phone = phone,
+                            diet = diet ?: Diet.ANY,
+                            spiciness = spiciness ?: Spiciness.ANY,
+                            profileFilled = true
+                        )
+
+                        viewModel.submitRegistration(user, onCompleted)
+                    }
+                )
+                {
+                    Text("Submit")
+                }
             }
         }
     }
