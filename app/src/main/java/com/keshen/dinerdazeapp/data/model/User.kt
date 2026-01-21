@@ -1,8 +1,5 @@
 package com.keshen.dinerdazeapp.data.model
 
-import androidx.navigation.compose.composable
-import com.keshen.dinerdazeapp.ui.navigation.Screen
-
 data class User (
     // Firebase details
     val uid: String = "",

@@ -37,11 +37,6 @@ class AuthService(
         return auth.currentUser!!.uid
     }
 
-    // Gets the current user's UID or null if not logged in
-    fun uidOrNull(): String? {
-        return auth.currentUser?.uid
-    }
-
     // Gets the current user's email
     fun email(): String {
         return auth.currentUser!!.email!!
