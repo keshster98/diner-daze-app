@@ -14,7 +14,6 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,7 +36,7 @@ fun SectionTitle(title: String) {
 
 @Composable
 fun CardSection(content: @Composable ColumnScope.() -> Unit) {
-    androidx.compose.material3.Card(
+    Card(
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(
@@ -168,18 +167,4 @@ fun EditField(
         modifier = Modifier.fillMaxWidth(),
         singleLine = true
     )
-}
-
-@Composable
-fun InfoRow(
-    label: String,
-    value: String
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(label, style = MaterialTheme.typography.bodyMedium)
-        Text(value, style = MaterialTheme.typography.bodyMedium)
-    }
 }

@@ -214,8 +214,11 @@ fun AppNav(
 
             composable<Screen.Settings> {
                 SettingsScreen(
-                    navController,
-                    authService = authService
+                    onLogout = {
+                        navController.navigate(Screen.SignIn) {
+                            popUpTo(0)
+                        }
+                    }
                 )
             }
         }
