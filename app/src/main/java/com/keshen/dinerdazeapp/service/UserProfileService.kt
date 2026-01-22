@@ -1,6 +1,9 @@
 package com.keshen.dinerdazeapp.service
 
 import com.google.firebase.firestore.FirebaseFirestore
+import com.keshen.dinerdazeapp.data.model.Diet
+import com.keshen.dinerdazeapp.data.model.Gender
+import com.keshen.dinerdazeapp.data.model.Spiciness
 import com.keshen.dinerdazeapp.data.model.User
 import kotlinx.coroutines.tasks.await
 
@@ -43,5 +46,29 @@ class UserProfileService(
             .await()
     }
 
-
+    // Update the profile of the current user
+    suspend fun updateProfile(
+        uid: String,
+        firstName: String,
+        lastName: String,
+        gender: Gender,
+        phone: String,
+        diet: Diet,
+        spiciness: Spiciness
+    ) {
+        db.collection("users")
+            .document(uid)
+            .update(
+                mapOf(
+                    "updatedAt" to System.currentTimeMillis(),
+                    "firstName" to firstName,
+                    "lastName" to lastName,
+                    "gender" to gender.name,
+                    "phone" to phone,
+                    "diet" to diet.name,
+                    "spiciness" to spiciness.name,
+                )
+            )
+            .await()
+    }
 }

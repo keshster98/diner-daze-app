@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.keshen.dinerdazeapp.core.utils.MessageType
 import com.keshen.dinerdazeapp.core.utils.UiMessage
+import com.keshen.dinerdazeapp.core.utils.ValidationException
 import com.keshen.dinerdazeapp.data.model.User
 import com.keshen.dinerdazeapp.service.AuthService
 import com.keshen.dinerdazeapp.service.UserProfileService
@@ -33,24 +34,9 @@ class RegistrationViewModel @Inject constructor(
         _message.value = null
         _isSubmitting.value = true
 
-        if (!isValid(user)) {
-            showError("Please fill in all fields!")
-            return
-        }
-
-        saveProfile(user, onSuccess)
-    }
-
-    fun logout() {
-        authService.signOut()
-    }
-
-    private fun saveProfile(
-        user: User,
-        onSuccess: () -> Unit
-    ) {
         viewModelScope.launch {
             runCatching {
+                validate(user)
                 profileService.saveProfile(user)
             }.onSuccess {
                 _message.value = UiMessage(
@@ -68,10 +54,26 @@ class RegistrationViewModel @Inject constructor(
         }
     }
 
-    private fun isValid(user: User): Boolean {
-        return user.firstName.isNotBlank() &&
-                user.lastName.isNotBlank() &&
-                user.phone.isNotBlank()
+    fun logout() {
+        authService.signOut()
+    }
+
+    private fun validate(user: User) {
+        if (
+            user.firstName.isBlank() ||
+            user.lastName.isBlank() ||
+            user.phone.isBlank()
+        ) {
+            throw ValidationException(
+                "First name, last name and phone number cannot be left blank!"
+            )
+        }
+
+        if (!user.phone.all { it.isDigit() }) {
+            throw ValidationException(
+                "Phone number must be digits only!"
+            )
+        }
     }
 
     private fun showError(text: String) {

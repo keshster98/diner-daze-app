@@ -209,11 +209,7 @@ fun AppNav(
             }
 
             composable<Screen.Profile> {
-                ProfileScreen(
-                    navController,
-                    authService,
-                    profileService
-                )
+                ProfileScreen()
             }
 
             composable<Screen.Settings> {
