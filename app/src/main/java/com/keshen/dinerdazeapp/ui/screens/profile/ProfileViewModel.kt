@@ -2,6 +2,7 @@ package com.keshen.dinerdazeapp.ui.screens.profile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.keshen.dinerdazeapp.core.constants.PHONE_REGEX
 import com.keshen.dinerdazeapp.core.utils.MessageType
 import com.keshen.dinerdazeapp.core.utils.UiMessage
 import com.keshen.dinerdazeapp.core.utils.ValidationException
@@ -74,9 +75,9 @@ class ProfileViewModel @Inject constructor(
             )
         }
 
-        if (!user.phone.all { it.isDigit() }) {
+        if (!PHONE_REGEX.matches(user.phone)) {
             throw ValidationException(
-                "Phone number must contain digits only!"
+                "Please enter a valid Malaysian phone number"
             )
         }
     }
