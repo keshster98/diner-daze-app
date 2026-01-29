@@ -40,7 +40,7 @@ fun SettingsScreen(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = "Sign out",
+                        text = "Sign Out",
                         style = MaterialTheme.typography.bodyLarge
                     )
 

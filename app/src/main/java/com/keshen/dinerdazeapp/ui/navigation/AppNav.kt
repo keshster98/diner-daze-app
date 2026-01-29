@@ -2,6 +2,7 @@ package com.keshen.dinerdazeapp.ui.navigation
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AdminPanelSettings
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Login
 import androidx.compose.material.icons.filled.Person
@@ -26,6 +27,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.keshen.dinerdazeapp.service.AuthService
 import com.keshen.dinerdazeapp.service.UserProfileService
+import com.keshen.dinerdazeapp.ui.screens.admin.AdminScreen
 import com.keshen.dinerdazeapp.ui.screens.auth.SignInScreen
 import com.keshen.dinerdazeapp.ui.screens.auth.SignUpScreen
 import com.keshen.dinerdazeapp.ui.screens.home.HomeScreen
@@ -43,15 +45,17 @@ fun AppNav(
 
     val uid by authService.uidFlow.collectAsState()
     var isProfileFilled by remember { mutableStateOf<Boolean?>(null) }
+    var isAdmin by remember { mutableStateOf(false) }
 
     LaunchedEffect(uid) {
-        isProfileFilled =
-            if (uid != null) {
-                profileService.isProfileFilled(authService.uid())
-            }
-            else {
-                null
-            }
+        if (uid == null) {
+            isProfileFilled = null
+            isAdmin = false
+            return@LaunchedEffect
+        }
+
+        isProfileFilled = profileService.isProfileFilled(uid!!)
+        isAdmin = profileService.isAdmin(uid!!)
     }
 
     Scaffold(
@@ -107,6 +111,19 @@ fun AppNav(
                         icon = { Icon(Icons.Filled.Settings, null) },
                         label = { Text("Settings") }
                     )
+
+                    if (isAdmin) {
+                        NavigationBarItem(
+                            selected = currentRoute == Screen.Admin::class.qualifiedName,
+                            onClick = {
+                                navController.navigate(Screen.Admin) {
+                                    launchSingleTop = true
+                                }
+                            },
+                            icon = { Icon(Icons.Filled.AdminPanelSettings, null) },
+                            label = { Text("Admin") }
+                        )
+                    }
                 }
 
                 // Access Tab (Sign In / Sign Up / Registration Form)
@@ -212,11 +229,25 @@ fun AppNav(
                 ProfileScreen()
             }
 
+            composable<Screen.Admin> {
+                if (!isAdmin) {
+                    navController.navigate(Screen.Home) {
+                        popUpTo(Screen.Admin) { inclusive = true }
+                    }
+                    return@composable
+                }
+
+                AdminScreen(
+                    navController = navController,
+                    authService = authService
+                )
+            }
+
             composable<Screen.Settings> {
                 SettingsScreen(
                     onLogout = {
-                        navController.navigate(Screen.SignIn) {
-                            popUpTo(0)
+                        navController.navigate(Screen.Home) {
+                            popUpTo(Screen.Settings) { inclusive = true }
                         }
                     }
                 )

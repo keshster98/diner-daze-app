@@ -11,5 +11,6 @@ sealed class Screen {
     @Serializable object RegistrationForm: Screen()
     @Serializable object Menu: Screen()
     @Serializable object Profile: Screen()
+    @Serializable object Admin: Screen()
     @Serializable object Settings: Screen()
 }

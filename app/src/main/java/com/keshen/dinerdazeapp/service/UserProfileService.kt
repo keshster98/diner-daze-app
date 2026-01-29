@@ -3,6 +3,7 @@ package com.keshen.dinerdazeapp.service
 import com.google.firebase.firestore.FirebaseFirestore
 import com.keshen.dinerdazeapp.data.model.Diet
 import com.keshen.dinerdazeapp.data.model.Gender
+import com.keshen.dinerdazeapp.data.model.Role
 import com.keshen.dinerdazeapp.data.model.Spiciness
 import com.keshen.dinerdazeapp.data.model.User
 import kotlinx.coroutines.tasks.await
@@ -45,6 +46,17 @@ class UserProfileService(
             .set(profile)
             .await()
     }
+
+    suspend fun isAdmin(uid: String): Boolean {
+        val doc = db.collection("users")
+            .document(uid)
+            .get()
+            .await()
+
+        val role = doc.getString("role") ?: return false
+        return role == Role.ADMIN.name
+    }
+
 
     // Update the profile of the current user
     suspend fun updateProfile(
