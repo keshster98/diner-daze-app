@@ -1,5 +1,6 @@
 package com.keshen.dinerdazeapp.ui.navigation
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AdminPanelSettings
@@ -25,9 +26,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.keshen.dinerdazeapp.data.model.User
 import com.keshen.dinerdazeapp.service.AuthService
 import com.keshen.dinerdazeapp.service.UserProfileService
+import com.keshen.dinerdazeapp.ui.screens.admin.AdminAddMenuScreen
+import com.keshen.dinerdazeapp.ui.screens.admin.AdminEditMenuScreen
+import com.keshen.dinerdazeapp.ui.screens.admin.AdminMenuScreen
 import com.keshen.dinerdazeapp.ui.screens.admin.AdminScreen
+import com.keshen.dinerdazeapp.ui.screens.admin.AdminTotalUsersScreen
+import com.keshen.dinerdazeapp.ui.screens.admin.AdminUserEditScreen
 import com.keshen.dinerdazeapp.ui.screens.auth.SignInScreen
 import com.keshen.dinerdazeapp.ui.screens.auth.SignUpScreen
 import com.keshen.dinerdazeapp.ui.screens.home.HomeScreen
@@ -58,7 +65,7 @@ fun AppNav(
         isAdmin = profileService.isAdmin(uid!!)
     }
 
-    Scaffold(
+    Scaffold(modifier = Modifier.fillMaxSize(),
         bottomBar = {
             NavigationBar {
                 val backStack by navController.currentBackStackEntryAsState()
@@ -176,7 +183,7 @@ fun AppNav(
             }
 
             composable<Screen.Menu> {
-                MenuScreen(navController)
+                MenuScreen()
             }
 
             composable<Screen.SignIn> {
@@ -250,6 +257,71 @@ fun AppNav(
                             popUpTo(Screen.Settings) { inclusive = true }
                         }
                     }
+                )
+            }
+
+            composable<Screen.AdminTotalUsers> {
+                if (!isAdmin) {
+                    navController.navigate(Screen.Home) {
+                        popUpTo(Screen.AdminMenu) { inclusive = true }
+                    }
+                    return@composable
+                }
+
+                AdminTotalUsersScreen(
+                    navController = navController
+                )
+            }
+
+            composable<Screen.AdminUserEdit> {
+                if (!isAdmin) {
+                    navController.navigate(Screen.Home) {
+                        popUpTo(Screen.AdminMenu) { inclusive = true }
+                    }
+                    return@composable
+                }
+
+                AdminUserEditScreen(
+                    navController = navController
+                )
+            }
+
+            composable<Screen.AdminMenu> {
+                if (!isAdmin) {
+                    navController.navigate(Screen.Home) {
+                        popUpTo(Screen.AdminMenu) { inclusive = true }
+                    }
+                    return@composable
+                }
+
+                AdminMenuScreen(
+                    navController = navController
+                )
+            }
+
+            composable<Screen.AdminAddMenu> {
+                if (!isAdmin) {
+                    navController.navigate(Screen.Home) {
+                        popUpTo(Screen.AdminAddMenu) { inclusive = true }
+                    }
+                    return@composable
+                }
+
+                AdminAddMenuScreen(
+                    navController = navController
+                )
+            }
+
+            composable<Screen.AdminEditMenu> {
+                if (!isAdmin) {
+                    navController.navigate(Screen.Home) {
+                        popUpTo(Screen.AdminEditMenu) { inclusive = true }
+                    }
+                    return@composable
+                }
+
+                AdminEditMenuScreen(
+                    navController = navController
                 )
             }
         }

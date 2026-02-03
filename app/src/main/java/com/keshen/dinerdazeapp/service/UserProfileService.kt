@@ -11,6 +11,17 @@ import kotlinx.coroutines.tasks.await
 class UserProfileService(
     private val db: FirebaseFirestore
 ) {
+    // Get all users
+    suspend fun getAllUsers(): List<User> {
+        return db.collection("users")
+            .get()
+            .await()
+            .documents
+            .mapNotNull { doc ->
+                doc.toObject(User::class.java)?.copy(uid = doc.id)
+            }
+    }
+
     // Get the profile of the current signed in user
     suspend fun getProfile(uid: String): User {
         val doc = db.collection("users")

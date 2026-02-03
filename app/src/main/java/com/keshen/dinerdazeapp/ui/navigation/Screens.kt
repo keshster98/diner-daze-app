@@ -13,4 +13,9 @@ sealed class Screen {
     @Serializable object Profile: Screen()
     @Serializable object Admin: Screen()
     @Serializable object Settings: Screen()
+    @Serializable object AdminTotalUsers: Screen()
+    @Serializable object AdminUserEdit : Screen()
+    @Serializable object AdminMenu : Screen()
+    @Serializable object AdminAddMenu : Screen()
+    @Serializable object AdminEditMenu : Screen()
 }

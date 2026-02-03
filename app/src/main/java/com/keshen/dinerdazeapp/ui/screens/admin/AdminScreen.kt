@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -15,6 +16,7 @@ import com.keshen.dinerdazeapp.service.AuthService
 import com.keshen.dinerdazeapp.ui.components.CardSection
 import com.keshen.dinerdazeapp.ui.components.DashboardTile
 import com.keshen.dinerdazeapp.ui.components.SectionTitle
+import com.keshen.dinerdazeapp.ui.navigation.Screen
 
 @Composable
 fun AdminScreen(
@@ -45,13 +47,15 @@ fun AdminScreen(
                         DashboardTile(
                             title = "Total Users",
                             modifier = Modifier.weight(1f),
-                            onClick = {}
+                            onClick = {navController.navigate(Screen.AdminTotalUsers)}
                         )
 
                         DashboardTile(
-                            title = "Orders",
+                            title = "Menu",
                             modifier = Modifier.weight(1f),
-                            onClick = {}
+                            onClick = {
+                                navController.navigate(Screen.AdminMenu)
+                            }
                         )
                     }
 

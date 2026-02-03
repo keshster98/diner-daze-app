@@ -41,14 +41,12 @@ fun ComposeApp() {
     val profileService = remember {
         UserProfileService(FirebaseFirestore.getInstance())
     }
-    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         Box(
-            modifier = Modifier.padding(innerPadding).fillMaxSize()
+            modifier = Modifier.fillMaxSize()
         ) {
             AppNav(
                 authService,
                 profileService
             )
         }
-    }
 }

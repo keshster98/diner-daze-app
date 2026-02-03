@@ -1,15 +1,9 @@
-package com.keshen.dinerdazeapp.ui.screens.menu
+package com.keshen.dinerdazeapp.ui.screens.admin
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.keshen.dinerdazeapp.data.model.Diet
-import com.keshen.dinerdazeapp.data.model.Menu
-import com.keshen.dinerdazeapp.data.model.MenuCategory
-import com.keshen.dinerdazeapp.data.model.Spiciness
-import com.keshen.dinerdazeapp.data.model.User
-import com.keshen.dinerdazeapp.service.AuthService
+import com.keshen.dinerdazeapp.data.model.*
 import com.keshen.dinerdazeapp.service.MenuService
-import com.keshen.dinerdazeapp.service.UserProfileService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,13 +12,11 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class MenuViewModel @Inject constructor(
-    private val menuService: MenuService,
-    private val authService: AuthService,
-    private val profileService: UserProfileService
-): ViewModel() {
+class AdminMenuViewModel @Inject constructor(
+    private val menuService: MenuService
+) : ViewModel() {
 
-    /* ---------- RAW DATA ---------- */
+    /* ---------------- RAW DATA ---------------- */
 
     private val _allMenus = MutableStateFlow<List<Menu>>(emptyList())
 
@@ -34,7 +26,7 @@ class MenuViewModel @Inject constructor(
     private val _error = MutableStateFlow<String?>(null)
     val error = _error.asStateFlow()
 
-    /* ---------- FILTER STATE ---------- */
+    /* ---------------- FILTER STATE ---------------- */
 
     private val _searchQuery = MutableStateFlow("")
     private val _category = MutableStateFlow<MenuCategory?>(null)
@@ -46,7 +38,7 @@ class MenuViewModel @Inject constructor(
     val diet = _diet.asStateFlow()
     val spiciness = _spiciness.asStateFlow()
 
-    /* ---------- FILTERED RESULT ---------- */
+    /* ---------------- FILTERED RESULT ---------------- */
 
     val menus = combine(
         _allMenus,
@@ -58,36 +50,28 @@ class MenuViewModel @Inject constructor(
 
         menus.filter { menu ->
 
-            val matchesSearch =
+            val matchesName =
                 query.isBlank() ||
                         menu.name.contains(query, ignoreCase = true)
 
-            val matchesCategory =
-                category == null || menu.category == category
+            val matchesCategory = category == null || menu.category == category
+            val matchesDiet = diet == null || menu.diet == diet
+            val matchesSpiciness = spiciness == null || menu.spiciness == spiciness
 
-            val matchesDiet =
-                diet == null ||
-                        menu.diet == Diet.ANY ||
-                        menu.diet == diet
-
-            val matchesSpiciness =
-                spiciness == null ||
-                        menu.spiciness == Spiciness.ANY ||
-                        menu.spiciness == spiciness
-
-            matchesSearch &&
+            matchesName &&
                     matchesCategory &&
                     matchesDiet &&
-                    matchesSpiciness &&
-                    menu.isAvailable
+                    matchesSpiciness
         }
     }
 
+    /* ---------------- INIT ---------------- */
 
     init {
         loadMenus()
-        loadUserPreferences()
     }
+
+    /* ---------------- DATA LOAD ---------------- */
 
     private fun loadMenus() {
         viewModelScope.launch {
@@ -105,7 +89,7 @@ class MenuViewModel @Inject constructor(
         }
     }
 
-    /* ---------- UI EVENTS ---------- */
+    /* ---------------- UI EVENTS ---------------- */
 
     fun onSearchChange(value: String) {
         _searchQuery.value = value
@@ -123,23 +107,21 @@ class MenuViewModel @Inject constructor(
         _spiciness.value = value
     }
 
-    private fun loadUserPreferences() {
-        viewModelScope.launch {
-            val uid = authService.uid()
+    fun reloadMenu() {
+        loadMenus()
+    }
 
+    fun deleteMenu(menuId: String) {
+        viewModelScope.launch {
             runCatching {
-                profileService.getProfile(uid)
-            }.onSuccess { user ->
-                applyUserPreferences(user)
+                menuService.deleteMenu(menuId)
+            }.onSuccess {
+                // 🔥 instant UI update
+                _allMenus.value = _allMenus.value.filterNot { it.uid == menuId }
+            }.onFailure {
+                _error.value = it.message ?: "Failed to delete menu"
             }
         }
     }
 
-    fun applyUserPreferences(user: User) {
-        _diet.value =
-            if (user.diet == Diet.ANY) null else user.diet
-
-        _spiciness.value =
-            if (user.spiciness == Spiciness.ANY) null else user.spiciness
-    }
 }

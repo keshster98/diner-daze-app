@@ -3,6 +3,7 @@ package com.keshen.dinerdazeapp.core.di
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.keshen.dinerdazeapp.service.AuthService
+import com.keshen.dinerdazeapp.service.MenuService
 import com.keshen.dinerdazeapp.service.UserProfileService
 import dagger.Module
 import dagger.Provides
@@ -37,4 +38,11 @@ object AppModule {
         firestore: FirebaseFirestore
     ): UserProfileService =
         UserProfileService(firestore)
+
+    @Provides
+    @Singleton
+    fun provideMenuService(
+        firestore: FirebaseFirestore
+    ): MenuService =
+        MenuService(firestore)
 }
