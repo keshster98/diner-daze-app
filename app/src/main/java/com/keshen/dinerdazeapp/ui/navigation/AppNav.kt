@@ -32,6 +32,7 @@ import com.keshen.dinerdazeapp.ui.screens.admin.menu.add.AdminAddMenuScreen
 import com.keshen.dinerdazeapp.ui.screens.admin.menu.edit.AdminEditMenuScreen
 import com.keshen.dinerdazeapp.ui.screens.admin.menu.AdminMenuScreen
 import com.keshen.dinerdazeapp.ui.screens.admin.AdminScreen
+import com.keshen.dinerdazeapp.ui.screens.admin.posts.AdminPostScreen
 import com.keshen.dinerdazeapp.ui.screens.admin.user.AdminTotalUsersScreen
 import com.keshen.dinerdazeapp.ui.screens.admin.user.edit.AdminUserEditScreen
 import com.keshen.dinerdazeapp.ui.screens.auth.SignInScreen
@@ -320,6 +321,19 @@ fun AppNav(
                 }
 
                 AdminEditMenuScreen(
+                    navController = navController
+                )
+            }
+
+            composable<Screen.AdminPosts> {
+                if (!isAdmin) {
+                    navController.navigate(Screen.Home) {
+                        popUpTo(Screen.AdminPosts) { inclusive = true }
+                    }
+                    return@composable
+                }
+
+                AdminPostScreen(
                     navController = navController
                 )
             }

@@ -18,4 +18,5 @@ sealed class Screen {
     @Serializable object AdminMenu : Screen()
     @Serializable object AdminAddMenu : Screen()
     @Serializable object AdminEditMenu : Screen()
+    @Serializable object AdminPosts : Screen()
 }

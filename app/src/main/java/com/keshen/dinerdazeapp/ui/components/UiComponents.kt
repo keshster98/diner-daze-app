@@ -483,7 +483,7 @@ fun MenuFilterChips(
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MenuRowCard(
     menu: Menu,
@@ -496,91 +496,38 @@ fun MenuRowCard(
             .clickable(onClick = onClick),
         shape = MaterialTheme.shapes.medium
     ) {
-        Column(
-            modifier = Modifier.padding(12.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+        Box(
+            modifier = Modifier.padding(12.dp)
         ) {
 
-            /* -------- TITLE -------- */
-            Text(
-                text = menu.name,
-                style = MaterialTheme.typography.titleMedium
-            )
-
-            /* -------- TAGS + DELETE -------- */
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+            /* -------- CONTENT -------- */
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxWidth()
             ) {
+                Text(
+                    text = menu.name,
+                    style = MaterialTheme.typography.titleMedium
+                )
 
-                FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.weight(1f)
-                ) {
-
-                    FilterChip(
-                        selected = false,
-                        enabled = false,
-                        onClick = {},
-                        label = {
-                            Text(
-                                menu.category.name
-                                    .lowercase()
-                                    .replaceFirstChar { it.uppercase() }
-                            )
-                        }
-                    )
-
-                    FilterChip(
-                        selected = false,
-                        enabled = false,
-                        onClick = {},
-                        label = {
-                            Text(
-                                menu.diet.name
-                                    .lowercase()
-                                    .split("_")
-                                    .joinToString(" ") {
-                                        it.replaceFirstChar { c -> c.uppercase() }
-                                    }
-                            )
-                        }
-                    )
-
-                    FilterChip(
-                        selected = false,
-                        enabled = false,
-                        onClick = {},
-                        label = {
-                            Text(
-                                menu.spiciness.name
-                                    .lowercase()
-                                    .split("_")
-                                    .joinToString(" ") {
-                                        it.replaceFirstChar { c -> c.uppercase() }
-                                    }
-                            )
-                        }
-                    )
-                }
-
-                IconButton(
-                    onClick = onDelete
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Delete,
-                        contentDescription = "Delete menu",
-                        tint = MaterialTheme.colorScheme.error
-                    )
-                }
+                Text(
+                    text = "RM ${"%.2f".format(menu.price)}",
+                    style = MaterialTheme.typography.bodyMedium
+                )
             }
 
-            /* -------- PRICE -------- */
-            Text(
-                text = "RM ${"%.2f".format(menu.price)}",
-                style = MaterialTheme.typography.bodyMedium
-            )
+            /* -------- DELETE ICON (TOP RIGHT) -------- */
+            IconButton(
+                onClick = onDelete,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Delete menu",
+                    tint = MaterialTheme.colorScheme.error
+                )
+            }
         }
     }
 }

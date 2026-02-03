@@ -31,7 +31,7 @@ fun AdminScreen(
     ) {
 
         item {
-            SectionTitle("Statistics")
+            SectionTitle("Admin Dashboard")
         }
 
         item {
@@ -45,7 +45,7 @@ fun AdminScreen(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         DashboardTile(
-                            title = "Total Users",
+                            title = "Users",
                             modifier = Modifier.weight(1f),
                             onClick = {navController.navigate(Screen.AdminTotalUsers)}
                         )
@@ -65,9 +65,9 @@ fun AdminScreen(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         DashboardTile(
-                            title = "—",
+                            title = "Posts",
                             modifier = Modifier.weight(1f),
-                            enabled = false
+                            onClick = { navController.navigate(Screen.AdminPosts) }
                         )
 
                         DashboardTile(

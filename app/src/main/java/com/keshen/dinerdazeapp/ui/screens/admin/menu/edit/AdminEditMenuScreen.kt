@@ -4,15 +4,23 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -34,9 +42,8 @@ import com.keshen.dinerdazeapp.data.model.Spiciness
 import com.keshen.dinerdazeapp.ui.components.CardSection
 import com.keshen.dinerdazeapp.ui.components.EnumDropdownField
 import com.keshen.dinerdazeapp.ui.components.Field
-import com.keshen.dinerdazeapp.ui.components.SectionTitle
-import com.keshen.dinerdazeapp.ui.screens.admin.menu.edit.AdminEditMenuViewModel
 
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
 @Composable
 fun AdminEditMenuScreen(
     navController: NavHostController,
@@ -62,127 +69,161 @@ fun AdminEditMenuScreen(
 
     var e by remember(menu) { mutableStateOf(menu) }
 
-    when {
-        isLoading -> Box(Modifier.fillMaxSize(), Alignment.Center) {
-            CircularProgressIndicator()
+    Column(modifier = Modifier.fillMaxSize()) {
+
+        /* ---------------- TOP BAR ---------------- */
+
+        TopAppBar(
+            title = { Text("Edit Menu") },
+            navigationIcon = {
+                IconButton(onClick = { navController.popBackStack() }) {
+                    Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                }
+            }
+        )
+
+        /* ---------------- CONTENT ---------------- */
+
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
+                .padding(16.dp),
+            contentAlignment = Alignment.Center
+        ) {
+
+            when {
+                isLoading -> {
+                    CircularProgressIndicator()
+                }
+
+                e == null -> {
+                    Text("Menu not found")
+                }
+
+                else -> {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+
+                        CardSection {
+                            Field(
+                                label = "Name",
+                                value = e!!.name,
+                                onValueChange = { e = e!!.copy(name = it) }
+                            )
+
+                            Field(
+                                label = "Description",
+                                value = e!!.description,
+                                onValueChange = { e = e!!.copy(description = it) }
+                            )
+
+                            Field(
+                                label = "Price",
+                                value = e!!.price.toString(),
+                                onValueChange = {
+                                    e = e!!.copy(price = it.toDoubleOrNull() ?: 0.0)
+                                }
+                            )
+
+                            EnumDropdownField(
+                                label = "Category",
+                                options = MenuCategory.entries,
+                                selected = e!!.category,
+                                onSelected = { e = e!!.copy(category = it) }
+                            )
+
+                            EnumDropdownField(
+                                label = "Diet",
+                                options = Diet.entries.filter { it != Diet.ANY },
+                                selected = e!!.diet,
+                                onSelected = { e = e!!.copy(diet = it) }
+                            )
+
+                            EnumDropdownField(
+                                label = "Spiciness",
+                                options = Spiciness.entries.filter { it != Spiciness.ANY },
+                                selected = e!!.spiciness,
+                                onSelected = { e = e!!.copy(spiciness = it) }
+                            )
+                        }
+
+                        message?.let { uiMessage ->
+                            val isError = uiMessage.type == MessageType.ERROR
+
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(
+                                        if (isError)
+                                            Color(0xFFFFEBEE)
+                                        else
+                                            Color(0xFFE8F5E9),
+                                        MaterialTheme.shapes.medium
+                                    )
+                                    .border(
+                                        1.dp,
+                                        if (isError)
+                                            Color(0xFFD32F2F)
+                                        else
+                                            Color(0xFF388E3C),
+                                        MaterialTheme.shapes.medium
+                                    )
+                                    .padding(12.dp)
+                            ) {
+                                Text(
+                                    text = uiMessage.text,
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                            }
+                        }
+                    }
+                }
+            }
         }
 
-        e == null -> Box(Modifier.fillMaxSize(), Alignment.Center) {
-            Text("Menu not found")
-        }
+        /* ---------------- BOTTOM ACTIONS ---------------- */
 
-        else -> LazyColumn(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
 
-            item { SectionTitle("Menu Information") }
-
-            item {
-                CardSection {
-                    Field(
-                        label = "Name",
-                        value = e!!.name,
-                        onValueChange = { e = e!!.copy(name = it) }
-                    )
-
-                    Field(
-                        label = "Description",
-                        value = e!!.description,
-                        onValueChange = { e = e!!.copy(description = it) }
-                    )
-
-                    Field(
-                        label = "Price",
-                        value = e!!.price.toString(),
-                        onValueChange = {
-                            e = e!!.copy(price = it.toDoubleOrNull() ?: 0.0)
-                        }
-                    )
-
-                    EnumDropdownField(
-                        label = "Category",
-                        options = MenuCategory.entries,
-                        selected = e!!.category,
-                        onSelected = { e = e!!.copy(category = it) }
-                    )
-
-                    EnumDropdownField(
-                        label = "Diet",
-                        options = Diet.entries.filter { it != Diet.ANY },
-                        selected = e!!.diet,
-                        onSelected = { e = e!!.copy(diet = it) }
-                    )
-
-                    EnumDropdownField(
-                        label = "Spiciness",
-                        options = Spiciness.entries.filter { it != Spiciness.ANY },
-                        selected = e!!.spiciness,
-                        onSelected = { e = e!!.copy(spiciness = it) }
-                    )
-                }
+            OutlinedButton(
+                modifier = Modifier.weight(1f),
+                onClick = { navController.popBackStack() }
+            ) {
+                Text("Cancel")
             }
 
-            item {
-                message?.let { uiMessage ->
-                    val isError = uiMessage.type == MessageType.ERROR
+            Button(
+                modifier = Modifier.weight(1f),
+                enabled = e != null && viewModel.isDirty(e!!) && !isSaving,
+                onClick = {
+                    viewModel.updateMenu(e!!) {
+                        navController.previousBackStackEntry
+                            ?.savedStateHandle
+                            ?.set("menu_edited", true)
 
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(
-                                color = if (isError)
-                                    Color(0xFFFFEBEE)
-                                else
-                                    Color(0xFFE8F5E9),
-                                shape = MaterialTheme.shapes.medium
-                            )
-                            .border(
-                                1.dp,
-                                if (isError)
-                                    Color(0xFFD32F2F)
-                                else
-                                    Color(0xFF388E3C),
-                                MaterialTheme.shapes.medium
-                            )
-                            .padding(12.dp)
-                    ) {
-                        Text(
-                            text = uiMessage.text,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.fillMaxWidth()
-                        )
+                        navController.popBackStack()
                     }
                 }
-            }
-
-            item {
-                Button(
-                    modifier = Modifier.fillMaxWidth(),
-                    enabled = viewModel.isDirty(e!!) && !isSaving,
-                    onClick = {
-                        viewModel.updateMenu(e!!) {
-                            navController.previousBackStackEntry
-                                ?.savedStateHandle
-                                ?.set("menu_edited", true)
-
-                            navController.popBackStack()
-                        }
-
-                    }
-                ) {
-                    if (isSaving) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(20.dp),
-                            strokeWidth = 2.dp
-                        )
-                    } else {
-                        Text("Edit Menu")
-                    }
+            ) {
+                if (isSaving) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(20.dp),
+                        strokeWidth = 2.dp
+                    )
+                } else {
+                    Text("Edit Menu")
                 }
             }
         }
     }
 }
+

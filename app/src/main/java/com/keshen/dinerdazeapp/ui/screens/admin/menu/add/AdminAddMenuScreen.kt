@@ -4,8 +4,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
@@ -17,6 +21,7 @@ import com.keshen.dinerdazeapp.data.model.*
 import com.keshen.dinerdazeapp.ui.components.*
 import com.keshen.dinerdazeapp.ui.screens.admin.menu.add.AdminAddMenuViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AdminAddMenuScreen(
     navController: NavHostController,
@@ -33,134 +38,156 @@ fun AdminAddMenuScreen(
     val isSubmitting by viewModel.isSubmitting.collectAsState()
     val message by viewModel.message.collectAsState()
 
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
+    Column(modifier = Modifier.fillMaxSize()) {
 
-        item { SectionTitle("Menu Information") }
+        /* ---------------- TOP BAR ---------------- */
 
-        item {
-            CardSection {
-
-                Field(
-                    label = "Menu Name",
-                    value = name,
-                    onValueChange = { name = it }
-                )
-
-                Field(
-                    label = "Description",
-                    value = description,
-                    onValueChange = { description = it }
-                )
-
-                Field(
-                    label = "Price (RM)",
-                    value = price,
-                    onValueChange = { price = it }
-                )
-
-                EnumDropdownField(
-                    label = "Category",
-                    options = MenuCategory.entries,
-                    selected = category,
-                    onSelected = { category = it }
-                )
-
-                EnumDropdownField(
-                    label = "Diet",
-                    options = Diet.entries.filter { it != Diet.ANY },
-                    selected = diet,
-                    onSelected = { diet = it }
-                )
-
-                EnumDropdownField(
-                    label = "Spiciness",
-                    options = Spiciness.entries.filter { it != Spiciness.ANY },
-                    selected = spiciness,
-                    onSelected = { spiciness = it }
-                )
-            }
-        }
-
-        /* ---------- MESSAGE ---------- */
-
-        item {
-            message?.let { uiMessage ->
-                val isError = uiMessage.type == MessageType.ERROR
-
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(
-                            color = if (isError) Color(0xFFFFEBEE) else Color(0xFFE8F5E9),
-                            shape = MaterialTheme.shapes.medium
-                        )
-                        .border(
-                            width = 1.dp,
-                            color = if (isError) Color(0xFFD32F2F) else Color(0xFF388E3C),
-                            shape = MaterialTheme.shapes.medium
-                        )
-                        .padding(12.dp)
-                ) {
-                    Text(
-                        text = uiMessage.text,
-                        color = if (isError) Color(0xFFD32F2F) else Color(0xFF388E3C),
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth()
-                    )
+        TopAppBar(
+            title = { Text("Add Menu") },
+            navigationIcon = {
+                IconButton(onClick = { navController.popBackStack() }) {
+                    Icon(Icons.Default.ArrowBack, contentDescription = "Back")
                 }
             }
-        }
+        )
 
-        /* ---------- ACTIONS ---------- */
+        /* ---------------- CONTENT ---------------- */
 
-        item {
-            Row(
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
+                .padding(16.dp),
+            contentAlignment = Alignment.Center
+        ) {
+
+            Column(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
 
-                OutlinedButton(
-                    modifier = Modifier.weight(1f),
-                    enabled = !isSubmitting,
-                    onClick = { navController.popBackStack() }
-                ) {
-                    Text("Cancel")
+                CardSection {
+
+                    Field(
+                        label = "Menu Name",
+                        value = name,
+                        onValueChange = { name = it }
+                    )
+
+                    Field(
+                        label = "Description",
+                        value = description,
+                        onValueChange = { description = it }
+                    )
+
+                    Field(
+                        label = "Price (RM)",
+                        value = price,
+                        onValueChange = { price = it }
+                    )
+
+                    EnumDropdownField(
+                        label = "Category",
+                        options = MenuCategory.entries,
+                        selected = category,
+                        onSelected = { category = it }
+                    )
+
+                    EnumDropdownField(
+                        label = "Diet",
+                        options = Diet.entries.filter { it != Diet.ANY },
+                        selected = diet,
+                        onSelected = { diet = it }
+                    )
+
+                    EnumDropdownField(
+                        label = "Spiciness",
+                        options = Spiciness.entries.filter { it != Spiciness.ANY },
+                        selected = spiciness,
+                        onSelected = { spiciness = it }
+                    )
                 }
 
-                Button(
-                    modifier = Modifier.weight(1f),
-                    enabled = !isSubmitting,
-                    onClick = {
-                        viewModel.addMenu(
-                            name = name,
-                            description = description,
-                            price = price,
-                            category = category ?: MenuCategory.MAIN,
-                            diet = diet ?: Diet.ANY,
-                            spiciness = spiciness ?: Spiciness.ANY,
-                            onSuccess = {
-                                navController.previousBackStackEntry
-                                    ?.savedStateHandle
-                                    ?.set("menu_added", true)
+                /* ---------- MESSAGE ---------- */
 
-                                navController.popBackStack()
-                            }
+                message?.let { uiMessage ->
+                    val isError = uiMessage.type == MessageType.ERROR
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(
+                                if (isError)
+                                    Color(0xFFFFEBEE)
+                                else
+                                    Color(0xFFE8F5E9),
+                                MaterialTheme.shapes.medium
+                            )
+                            .border(
+                                1.dp,
+                                if (isError)
+                                    Color(0xFFD32F2F)
+                                else
+                                    Color(0xFF388E3C),
+                                MaterialTheme.shapes.medium
+                            )
+                            .padding(12.dp)
+                    ) {
+                        Text(
+                            text = uiMessage.text,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth()
                         )
                     }
-                ) {
-                    if (isSubmitting) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(20.dp),
-                            strokeWidth = 2.dp
-                        )
-                    } else {
-                        Text("Add Menu")
-                    }
+                }
+            }
+        }
+
+        /* ---------------- BOTTOM ACTIONS ---------------- */
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+
+            OutlinedButton(
+                modifier = Modifier.weight(1f),
+                enabled = !isSubmitting,
+                onClick = { navController.popBackStack() }
+            ) {
+                Text("Cancel")
+            }
+
+            Button(
+                modifier = Modifier.weight(1f),
+                enabled = !isSubmitting,
+                onClick = {
+                    viewModel.addMenu(
+                        name = name,
+                        description = description,
+                        price = price,
+                        category = category ?: MenuCategory.MAIN,
+                        diet = diet ?: Diet.ANY,
+                        spiciness = spiciness ?: Spiciness.ANY,
+                        onSuccess = {
+                            navController.previousBackStackEntry
+                                ?.savedStateHandle
+                                ?.set("menu_added", true)
+
+                            navController.popBackStack()
+                        }
+                    )
+                }
+            ) {
+                if (isSubmitting) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(20.dp),
+                        strokeWidth = 2.dp
+                    )
+                } else {
+                    Text("Add Menu")
                 }
             }
         }
