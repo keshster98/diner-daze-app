@@ -1,8 +1,11 @@
-package com.keshen.dinerdazeapp.ui.screens.admin
+package com.keshen.dinerdazeapp.ui.screens.admin.menu
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.keshen.dinerdazeapp.data.model.*
+import com.keshen.dinerdazeapp.data.model.Diet
+import com.keshen.dinerdazeapp.data.model.Menu
+import com.keshen.dinerdazeapp.data.model.MenuCategory
+import com.keshen.dinerdazeapp.data.model.Spiciness
 import com.keshen.dinerdazeapp.service.MenuService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

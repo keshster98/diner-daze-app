@@ -1,4 +1,4 @@
-package com.keshen.dinerdazeapp.ui.screens.admin
+package com.keshen.dinerdazeapp.ui.screens.admin.menu
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -16,6 +16,7 @@ import androidx.navigation.NavHostController
 import com.keshen.dinerdazeapp.ui.components.MenuFilterChips
 import com.keshen.dinerdazeapp.ui.components.MenuRowCard
 import com.keshen.dinerdazeapp.ui.navigation.Screen
+import com.keshen.dinerdazeapp.ui.screens.admin.menu.AdminMenuViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

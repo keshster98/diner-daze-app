@@ -1,4 +1,4 @@
-package com.keshen.dinerdazeapp.ui.screens.admin
+package com.keshen.dinerdazeapp.ui.screens.admin.menu.edit
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -35,6 +35,7 @@ import com.keshen.dinerdazeapp.ui.components.CardSection
 import com.keshen.dinerdazeapp.ui.components.EnumDropdownField
 import com.keshen.dinerdazeapp.ui.components.Field
 import com.keshen.dinerdazeapp.ui.components.SectionTitle
+import com.keshen.dinerdazeapp.ui.screens.admin.menu.edit.AdminEditMenuViewModel
 
 @Composable
 fun AdminEditMenuScreen(

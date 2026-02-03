@@ -1,4 +1,4 @@
-package com.keshen.dinerdazeapp.ui.screens.admin
+package com.keshen.dinerdazeapp.ui.screens.admin.user
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

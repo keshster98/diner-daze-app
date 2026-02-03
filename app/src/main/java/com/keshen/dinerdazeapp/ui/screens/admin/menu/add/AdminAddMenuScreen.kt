@@ -1,4 +1,4 @@
-package com.keshen.dinerdazeapp.ui.screens.admin
+package com.keshen.dinerdazeapp.ui.screens.admin.menu.add
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -15,6 +15,7 @@ import androidx.navigation.NavHostController
 import com.keshen.dinerdazeapp.core.utils.MessageType
 import com.keshen.dinerdazeapp.data.model.*
 import com.keshen.dinerdazeapp.ui.components.*
+import com.keshen.dinerdazeapp.ui.screens.admin.menu.add.AdminAddMenuViewModel
 
 @Composable
 fun AdminAddMenuScreen(

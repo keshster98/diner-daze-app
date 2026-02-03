@@ -1,4 +1,4 @@
-package com.keshen.dinerdazeapp.ui.screens.admin
+package com.keshen.dinerdazeapp.ui.screens.admin.user
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -15,6 +15,7 @@ import androidx.navigation.NavHostController
 import com.keshen.dinerdazeapp.ui.components.FilterChipsRow
 import com.keshen.dinerdazeapp.ui.components.UserRowCard
 import com.keshen.dinerdazeapp.ui.navigation.Screen
+import com.keshen.dinerdazeapp.ui.screens.admin.user.AdminTotalUsersViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
