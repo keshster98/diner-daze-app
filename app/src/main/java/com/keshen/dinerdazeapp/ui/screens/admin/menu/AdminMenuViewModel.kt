@@ -18,9 +18,6 @@ import javax.inject.Inject
 class AdminMenuViewModel @Inject constructor(
     private val menuService: MenuService
 ) : ViewModel() {
-
-    /* ---------------- RAW DATA ---------------- */
-
     private val _allMenus = MutableStateFlow<List<Menu>>(emptyList())
 
     private val _isLoading = MutableStateFlow(true)
@@ -28,8 +25,6 @@ class AdminMenuViewModel @Inject constructor(
 
     private val _error = MutableStateFlow<String?>(null)
     val error = _error.asStateFlow()
-
-    /* ---------------- FILTER STATE ---------------- */
 
     private val _searchQuery = MutableStateFlow("")
     private val _category = MutableStateFlow<MenuCategory?>(null)
@@ -40,8 +35,6 @@ class AdminMenuViewModel @Inject constructor(
     val category = _category.asStateFlow()
     val diet = _diet.asStateFlow()
     val spiciness = _spiciness.asStateFlow()
-
-    /* ---------------- FILTERED RESULT ---------------- */
 
     val menus = combine(
         _allMenus,
@@ -68,13 +61,9 @@ class AdminMenuViewModel @Inject constructor(
         }
     }
 
-    /* ---------------- INIT ---------------- */
-
     init {
         loadMenus()
     }
-
-    /* ---------------- DATA LOAD ---------------- */
 
     private fun loadMenus() {
         viewModelScope.launch {
@@ -91,8 +80,6 @@ class AdminMenuViewModel @Inject constructor(
             _isLoading.value = false
         }
     }
-
-    /* ---------------- UI EVENTS ---------------- */
 
     fun onSearchChange(value: String) {
         _searchQuery.value = value

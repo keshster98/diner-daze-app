@@ -19,8 +19,6 @@ class AdminTotalUsersViewModel @Inject constructor(
     private val profileService: UserProfileService
 ) : ViewModel() {
 
-    /* ---------------- RAW DATA ---------------- */
-
     private val _allUsers = MutableStateFlow<List<User>>(emptyList())
 
     private val _isLoading = MutableStateFlow(true)
@@ -28,8 +26,6 @@ class AdminTotalUsersViewModel @Inject constructor(
 
     private val _error = MutableStateFlow<String?>(null)
     val error = _error.asStateFlow()
-
-    /* ---------------- FILTER STATE ---------------- */
 
     private val _searchQuery = MutableStateFlow("")
     private val _gender = MutableStateFlow<Gender?>(null)
@@ -40,8 +36,6 @@ class AdminTotalUsersViewModel @Inject constructor(
     val gender = _gender.asStateFlow()
     val diet = _diet.asStateFlow()
     val spiciness = _spiciness.asStateFlow()
-
-    /* ---------------- FILTERED RESULT ---------------- */
 
     val users = combine(
         _allUsers,
@@ -69,13 +63,9 @@ class AdminTotalUsersViewModel @Inject constructor(
         }
     }
 
-    /* ---------------- INIT ---------------- */
-
     init {
         loadUsers()
     }
-
-    /* ---------------- DATA LOAD ---------------- */
 
     private fun loadUsers() {
         viewModelScope.launch {
@@ -93,8 +83,6 @@ class AdminTotalUsersViewModel @Inject constructor(
         }
     }
 
-    /* ---------------- UI EVENTS ---------------- */
-
     fun onSearchChange(value: String) {
         _searchQuery.value = value
     }
@@ -109,11 +97,5 @@ class AdminTotalUsersViewModel @Inject constructor(
 
     fun onSpicinessSelected(value: Spiciness?) {
         _spiciness.value = value
-    }
-
-    fun clearFilters() {
-        _gender.value = null
-        _diet.value = null
-        _spiciness.value = null
     }
 }

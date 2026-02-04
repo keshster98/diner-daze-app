@@ -5,11 +5,9 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
@@ -19,7 +17,6 @@ import androidx.navigation.NavHostController
 import com.keshen.dinerdazeapp.core.utils.MessageType
 import com.keshen.dinerdazeapp.data.model.*
 import com.keshen.dinerdazeapp.ui.components.*
-import com.keshen.dinerdazeapp.ui.screens.admin.menu.add.AdminAddMenuViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -35,12 +32,14 @@ fun AdminAddMenuScreen(
     var diet by remember { mutableStateOf<Diet?>(null) }
     var spiciness by remember { mutableStateOf<Spiciness?>(null) }
 
+    var preparationTime by remember { mutableStateOf("") }
+    var servingSize by remember { mutableStateOf("") }
+    var ingredients by remember { mutableStateOf("") }
+
     val isSubmitting by viewModel.isSubmitting.collectAsState()
     val message by viewModel.message.collectAsState()
 
     Column(modifier = Modifier.fillMaxSize()) {
-
-        /* ---------------- TOP BAR ---------------- */
 
         TopAppBar(
             title = { Text("Add Menu") },
@@ -51,65 +50,109 @@ fun AdminAddMenuScreen(
             }
         )
 
-        /* ---------------- CONTENT ---------------- */
-
-        Box(
+        LazyColumn(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()
                 .padding(16.dp),
-            contentAlignment = Alignment.Center
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
 
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-
+            item {
                 CardSection {
 
-                    Field(
-                        label = "Menu Name",
-                        value = name,
-                        onValueChange = { name = it }
-                    )
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(max = 420.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
 
-                    Field(
-                        label = "Description",
-                        value = description,
-                        onValueChange = { description = it }
-                    )
+                        item {
+                            Field(
+                                label = "Menu Name",
+                                value = name,
+                                onValueChange = { name = it }
+                            )
+                        }
 
-                    Field(
-                        label = "Price (RM)",
-                        value = price,
-                        onValueChange = { price = it }
-                    )
+                        item {
+                            Field(
+                                label = "Description",
+                                value = description,
+                                onValueChange = { description = it }
+                            )
+                        }
 
-                    EnumDropdownField(
-                        label = "Category",
-                        options = MenuCategory.entries,
-                        selected = category,
-                        onSelected = { category = it }
-                    )
+                        item {
+                            Field(
+                                label = "Price (RM)",
+                                value = price,
+                                onValueChange = { price = it }
+                            )
+                        }
 
-                    EnumDropdownField(
-                        label = "Diet",
-                        options = Diet.entries.filter { it != Diet.ANY },
-                        selected = diet,
-                        onSelected = { diet = it }
-                    )
+                        item {
+                            EnumDropdownField(
+                                label = "Category",
+                                options = MenuCategory.entries,
+                                selected = category,
+                                onSelected = { category = it }
+                            )
+                        }
 
-                    EnumDropdownField(
-                        label = "Spiciness",
-                        options = Spiciness.entries.filter { it != Spiciness.ANY },
-                        selected = spiciness,
-                        onSelected = { spiciness = it }
-                    )
+                        item {
+                            EnumDropdownField(
+                                label = "Diet",
+                                options = Diet.entries.filter { it != Diet.ANY },
+                                selected = diet,
+                                onSelected = { diet = it }
+                            )
+                        }
+
+                        item {
+                            EnumDropdownField(
+                                label = "Spiciness",
+                                options = Spiciness.entries.filter { it != Spiciness.ANY },
+                                selected = spiciness,
+                                onSelected = { spiciness = it }
+                            )
+                        }
+
+                        item {
+                            Field(
+                                label = "Preparation Time",
+                                value = preparationTime,
+                                onValueChange = { preparationTime = it }
+                            )
+                        }
+
+                        item {
+                            Field(
+                                label = "Serving Size",
+                                value = servingSize,
+                                onValueChange = { servingSize = it }
+                            )
+                        }
+
+                        item {
+                            Field(
+                                label = "Ingredients",
+                                value = ingredients,
+                                onValueChange = { ingredients = it }
+                            )
+                        }
+
+                        // small bottom padding so last field isn’t cut off
+                        item {
+                            Spacer(modifier = Modifier.height(4.dp))
+                        }
+                    }
                 }
 
-                /* ---------- MESSAGE ---------- */
+            }
 
+            item {
                 message?.let { uiMessage ->
                     val isError = uiMessage.type == MessageType.ERROR
 
@@ -117,18 +160,12 @@ fun AdminAddMenuScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .background(
-                                if (isError)
-                                    Color(0xFFFFEBEE)
-                                else
-                                    Color(0xFFE8F5E9),
+                                if (isError) Color(0xFFFFEBEE) else Color(0xFFE8F5E9),
                                 MaterialTheme.shapes.medium
                             )
                             .border(
                                 1.dp,
-                                if (isError)
-                                    Color(0xFFD32F2F)
-                                else
-                                    Color(0xFF388E3C),
+                                if (isError) Color(0xFFD32F2F) else Color(0xFF388E3C),
                                 MaterialTheme.shapes.medium
                             )
                             .padding(12.dp)
@@ -142,8 +179,6 @@ fun AdminAddMenuScreen(
                 }
             }
         }
-
-        /* ---------------- BOTTOM ACTIONS ---------------- */
 
         Row(
             modifier = Modifier
@@ -171,6 +206,9 @@ fun AdminAddMenuScreen(
                         category = category ?: MenuCategory.MAIN,
                         diet = diet ?: Diet.ANY,
                         spiciness = spiciness ?: Spiciness.ANY,
+                        preparationTime = preparationTime,
+                        servingSize = servingSize,
+                        ingredientsRaw = ingredients,
                         onSuccess = {
                             navController.previousBackStackEntry
                                 ?.savedStateHandle
@@ -193,3 +231,4 @@ fun AdminAddMenuScreen(
         }
     }
 }
+

@@ -18,7 +18,6 @@ import com.keshen.dinerdazeapp.core.utils.MessageType
 import com.keshen.dinerdazeapp.data.model.PostTag
 import com.keshen.dinerdazeapp.ui.components.CardSection
 import com.keshen.dinerdazeapp.ui.components.EnumDropdownField
-import com.keshen.dinerdazeapp.ui.components.Field
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -35,8 +34,6 @@ fun AdminAddPostScreen(
 
     Column(modifier = Modifier.fillMaxSize()) {
 
-        /* ---------------- TOP BAR ---------------- */
-
         TopAppBar(
             title = { Text("Add Post") },
             navigationIcon = {
@@ -45,8 +42,6 @@ fun AdminAddPostScreen(
                 }
             }
         )
-
-        /* ---------------- CONTENT ---------------- */
 
         Box(
             modifier = Modifier
@@ -88,8 +83,6 @@ fun AdminAddPostScreen(
                     )
                 }
 
-                /* ---------- MESSAGE ---------- */
-
                 message?.let { uiMessage ->
                     val isError = uiMessage.type == MessageType.ERROR
 
@@ -122,8 +115,6 @@ fun AdminAddPostScreen(
                 }
             }
         }
-
-        /* ---------------- BOTTOM ACTIONS ---------------- */
 
         Row(
             modifier = Modifier

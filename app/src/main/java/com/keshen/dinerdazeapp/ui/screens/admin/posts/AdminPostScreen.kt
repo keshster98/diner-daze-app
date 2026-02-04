@@ -25,8 +25,6 @@ fun AdminPostScreen(
     viewModel: AdminPostViewModel = hiltViewModel()
 ) {
 
-    /* ---------- STATE ---------- */
-
     val posts by viewModel.posts.collectAsState(initial = emptyList())
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.error.collectAsState()
@@ -64,8 +62,6 @@ fun AdminPostScreen(
 
     Box(modifier = Modifier.fillMaxSize()) {
 
-        /* ---------- TOP BAR ---------- */
-
         TopAppBar(
             title = { Text("Posts") },
             navigationIcon = {
@@ -88,17 +84,12 @@ fun AdminPostScreen(
             }
         )
 
-        /* ---------- CONTENT ---------- */
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(top = 64.dp)
                 .padding(16.dp)
         ) {
-
-            /* ---------- SEARCH ---------- */
-
             OutlinedTextField(
                 value = search,
                 onValueChange = viewModel::onSearchChange,
@@ -109,7 +100,6 @@ fun AdminPostScreen(
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            /* ---------- TAG FILTER ---------- */
             Text(
                 text = "Tags",
                 style = MaterialTheme.typography.labelMedium,
@@ -123,7 +113,6 @@ fun AdminPostScreen(
 
             Spacer(modifier = Modifier.height(6.dp))
 
-            /* ---------- SORT FILTER ---------- */
             Text(
                 text = "Sort By",
                 style = MaterialTheme.typography.labelMedium,
@@ -136,8 +125,6 @@ fun AdminPostScreen(
             )
 
             Spacer(modifier = Modifier.height(16.dp))
-
-            /* ---------- CONTENT STATE ---------- */
 
             when {
                 isLoading -> {

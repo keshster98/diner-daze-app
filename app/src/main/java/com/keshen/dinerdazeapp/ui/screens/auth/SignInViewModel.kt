@@ -52,13 +52,27 @@ class SignInViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
             runCatching {
+                // 1. Firebase auth login
                 authService.signIn(email, password)
 
                 val uid = authService.uid()
+
+                // 2. 🔒 Defensive check — pending deletion
+                val pendingDeletion = profileService.isDeletionRequested(uid)
+                if (pendingDeletion) {
+                    authService.signOut()
+                    throw IllegalStateException(
+                        "Account pending deletion. You can only sign in or sign up after the admin deletes the account. " +
+                                "If it stays like this for 5 days or more, please contact the admin via email."
+                    )
+                }
+
+                // 3. Normal success path
                 val name = profileService.getUserFirstName(uid, email)
                 val completed = profileService.isProfileFilled(uid)
 
                 name to completed
+
             }.onSuccess { (name, completed) ->
                 _message.value = UiMessage(
                     "Success! Signing you in, $name",
@@ -67,6 +81,7 @@ class SignInViewModel @Inject constructor(
 
                 delay(2000)
                 onSuccess(completed)
+
             }.onFailure {
                 _message.value = UiMessage(
                     it.message ?: "Something went wrong. Please try again.",

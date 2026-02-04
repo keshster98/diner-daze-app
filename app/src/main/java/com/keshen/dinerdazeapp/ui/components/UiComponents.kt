@@ -18,8 +18,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.AssistChip
+import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenuItem
@@ -51,6 +53,10 @@ import com.keshen.dinerdazeapp.data.model.PostSort
 import com.keshen.dinerdazeapp.data.model.PostTag
 import com.keshen.dinerdazeapp.data.model.Spiciness
 import com.keshen.dinerdazeapp.data.model.User
+import com.keshen.dinerdazeapp.ui.screens.admin.deletion.RequestSort
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun SectionTitle(title: String) {
@@ -250,7 +256,6 @@ fun FilterChipsRow(
         modifier = Modifier.fillMaxWidth()
     ) {
 
-        // -------- Gender --------
         Text(
             text = "Gender",
             style = MaterialTheme.typography.labelMedium,
@@ -280,7 +285,6 @@ fun FilterChipsRow(
             }
         }
 
-        // -------- Diet --------
         Text(
             text = "Diet",
             style = MaterialTheme.typography.labelMedium,
@@ -310,7 +314,6 @@ fun FilterChipsRow(
             }
         }
 
-        // -------- Spiciness --------
         Text(
             text = "Spiciness",
             style = MaterialTheme.typography.labelMedium,
@@ -392,8 +395,6 @@ fun MenuFilterChips(
         modifier = Modifier.fillMaxWidth()
     ) {
 
-        /* -------- CATEGORY -------- */
-
         Text(
             text = "Category",
             style = MaterialTheme.typography.labelMedium
@@ -423,8 +424,6 @@ fun MenuFilterChips(
         }
 
         Spacer(modifier = Modifier.height(6.dp))
-
-        /* -------- DIET -------- */
 
         Text(
             text = "Diet",
@@ -461,8 +460,6 @@ fun MenuFilterChips(
         }
 
         Spacer(modifier = Modifier.height(6.dp))
-
-        /* -------- SPICINESS -------- */
 
         Text(
             text = "Spiciness",
@@ -518,7 +515,6 @@ fun MenuRowCard(
             modifier = Modifier.padding(12.dp)
         ) {
 
-            /* -------- CONTENT -------- */
             Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.fillMaxWidth()
@@ -534,7 +530,6 @@ fun MenuRowCard(
                 )
             }
 
-            /* -------- DELETE ICON (TOP RIGHT) -------- */
             IconButton(
                 onClick = onDelete,
                 modifier = Modifier
@@ -553,49 +548,88 @@ fun MenuRowCard(
 @Composable
 fun MenuGridCard(
     menu: Menu,
+    quantity: Int,
+    isLoggedIn: Boolean,
+    onIncrease: () -> Unit,
+    onDecrease: () -> Unit,
+    onAddToCart: () -> Unit,
     onClick: () -> Unit
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .aspectRatio(1f) // keeps grid tiles uniform
+            .height(180.dp)
             .clickable(onClick = onClick),
-        shape = MaterialTheme.shapes.medium,
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        shape = MaterialTheme.shapes.large
     ) {
         Column(
             modifier = Modifier
+                .fillMaxSize()
                 .padding(12.dp)
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.SpaceBetween
         ) {
 
-            /* ---------- TITLE + DESCRIPTION ---------- */
+            Text(
+                text = menu.name,
+                style = MaterialTheme.typography.titleMedium,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
 
-            Column(
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                Text(
-                    text = menu.name,
-                    style = MaterialTheme.typography.titleMedium,
-                    maxLines = 2
-                )
-
-                Text(
-                    text = menu.description,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 3
-                )
-            }
-
-            /* ---------- PRICE ---------- */
+            Spacer(Modifier.height(4.dp))
 
             Text(
-                text = "RM ${"%.2f".format(menu.price)}",
-                style = MaterialTheme.typography.titleSmall,
+                text = "RM %.2f".format(menu.price),
+                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.primary
             )
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            if (isLoggedIn) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        IconButton(
+                            onClick = onDecrease,
+                            enabled = quantity > 0
+                        ) {
+                            Icon(Icons.Default.Remove, contentDescription = "Decrease")
+                        }
+
+                        Text(
+                            text = quantity.toString(),
+                            modifier = Modifier.padding(horizontal = 8.dp)
+                        )
+
+                        IconButton(
+                            onClick = onIncrease,
+                            enabled = quantity < 5
+                        ) {
+                            Icon(Icons.Default.Add, contentDescription = "Increase")
+                        }
+                    }
+
+                    Spacer(Modifier.weight(1f))
+
+                    IconButton(
+                        onClick = onAddToCart,
+                        enabled = quantity > 0
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ShoppingCart,
+                            contentDescription = "Add to cart",
+                            tint =
+                                if (quantity > 0)
+                                    MaterialTheme.colorScheme.primary
+                                else
+                                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
+                        )
+                    }
+                }
+            }
         }
     }
 }
@@ -737,6 +771,104 @@ fun UserPostRowCard(
                 maxLines = 3,
                 overflow = TextOverflow.Ellipsis,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}
+
+@Composable
+fun AdminDeletionRequestRow(
+    user: User,
+    onDelete: () -> Unit
+) {
+    Card {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+
+                Text(
+                    text = "${user.firstName} ${user.lastName}",
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    style = MaterialTheme.typography.bodyLarge
+                )
+
+                Text(
+                    text = "${user.email} | ${user.phone}",
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                Text(
+                    text = "Deletion Requested On: ${formatDate(user.deleteRequestedAt)}",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+            IconButton(onClick = onDelete) {
+                Icon(
+                    Icons.Default.Delete,
+                    contentDescription = "Delete",
+                    tint = MaterialTheme.colorScheme.error
+                )
+            }
+        }
+    }
+}
+
+fun formatDate(time: Long?): String {
+    if (time == null) return "—"
+
+    val sdf = SimpleDateFormat("hh:mm a, dd/MM/yy", Locale.getDefault())
+    return sdf.format(Date(time))
+}
+
+@Composable
+fun GenderFilterChips(
+    selected: Gender?,
+    onSelected: (Gender?) -> Unit
+) {
+    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Gender.entries.filter { it != Gender.PREFER_NOT_TO_SAY }.forEach {
+            FilterChip(
+                selected = selected == it,
+                onClick = { onSelected(if (selected == it) null else it) },
+                label = { Text(it.name.lowercase().replaceFirstChar(Char::uppercase)) }
+            )
+        }
+    }
+}
+
+@Composable
+fun RequestSortChips(
+    selected: RequestSort,
+    onSelected: (RequestSort) -> Unit
+) {
+    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        RequestSort.entries.forEach {
+            FilterChip(
+                selected = selected == it,
+                onClick = { onSelected(it) },
+                label = {
+                    Text(
+                        if (it == RequestSort.EARLIEST)
+                            "Earliest Request"
+                        else
+                            "Latest Request"
+                    )
+                }
             )
         }
     }

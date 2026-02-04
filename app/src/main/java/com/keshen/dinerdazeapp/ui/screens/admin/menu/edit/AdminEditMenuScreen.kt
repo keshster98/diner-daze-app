@@ -6,10 +6,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
@@ -71,8 +75,6 @@ fun AdminEditMenuScreen(
 
     Column(modifier = Modifier.fillMaxSize()) {
 
-        /* ---------------- TOP BAR ---------------- */
-
         TopAppBar(
             title = { Text("Edit Menu") },
             navigationIcon = {
@@ -81,8 +83,6 @@ fun AdminEditMenuScreen(
                 }
             }
         )
-
-        /* ---------------- CONTENT ---------------- */
 
         Box(
             modifier = Modifier
@@ -108,47 +108,108 @@ fun AdminEditMenuScreen(
                     ) {
 
                         CardSection {
-                            Field(
-                                label = "Name",
-                                value = e!!.name,
-                                onValueChange = { e = e!!.copy(name = it) }
-                            )
 
-                            Field(
-                                label = "Description",
-                                value = e!!.description,
-                                onValueChange = { e = e!!.copy(description = it) }
-                            )
+                            LazyColumn(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .heightIn(max = 420.dp),
+                                verticalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
 
-                            Field(
-                                label = "Price",
-                                value = e!!.price.toString(),
-                                onValueChange = {
-                                    e = e!!.copy(price = it.toDoubleOrNull() ?: 0.0)
+                                item {
+                                    Field(
+                                        label = "Name",
+                                        value = e!!.name,
+                                        onValueChange = { e = e!!.copy(name = it) }
+                                    )
                                 }
-                            )
 
-                            EnumDropdownField(
-                                label = "Category",
-                                options = MenuCategory.entries,
-                                selected = e!!.category,
-                                onSelected = { e = e!!.copy(category = it) }
-                            )
+                                item {
+                                    Field(
+                                        label = "Description",
+                                        value = e!!.description,
+                                        onValueChange = { e = e!!.copy(description = it) }
+                                    )
+                                }
 
-                            EnumDropdownField(
-                                label = "Diet",
-                                options = Diet.entries.filter { it != Diet.ANY },
-                                selected = e!!.diet,
-                                onSelected = { e = e!!.copy(diet = it) }
-                            )
+                                item {
+                                    Field(
+                                        label = "Price",
+                                        value = e!!.price.toString(),
+                                        onValueChange = {
+                                            e = e!!.copy(price = it.toDoubleOrNull() ?: 0.0)
+                                        }
+                                    )
+                                }
 
-                            EnumDropdownField(
-                                label = "Spiciness",
-                                options = Spiciness.entries.filter { it != Spiciness.ANY },
-                                selected = e!!.spiciness,
-                                onSelected = { e = e!!.copy(spiciness = it) }
-                            )
+                                item {
+                                    EnumDropdownField(
+                                        label = "Category",
+                                        options = MenuCategory.entries,
+                                        selected = e!!.category,
+                                        onSelected = { e = e!!.copy(category = it) }
+                                    )
+                                }
+
+                                item {
+                                    EnumDropdownField(
+                                        label = "Diet",
+                                        options = Diet.entries.filter { it != Diet.ANY },
+                                        selected = e!!.diet,
+                                        onSelected = { e = e!!.copy(diet = it) }
+                                    )
+                                }
+
+                                item {
+                                    EnumDropdownField(
+                                        label = "Spiciness",
+                                        options = Spiciness.entries.filter { it != Spiciness.ANY },
+                                        selected = e!!.spiciness,
+                                        onSelected = { e = e!!.copy(spiciness = it) }
+                                    )
+                                }
+
+                                item {
+                                    Field(
+                                        label = "Preparation Time",
+                                        value = e!!.preparationTime,
+                                        onValueChange = {
+                                            e = e!!.copy(preparationTime = it)
+                                        }
+                                    )
+                                }
+
+                                item {
+                                    Field(
+                                        label = "Serving Size",
+                                        value = e!!.servingSize,
+                                        onValueChange = {
+                                            e = e!!.copy(servingSize = it)
+                                        }
+                                    )
+                                }
+
+                                item {
+                                    Field(
+                                        label = "Ingredients",
+                                        value = e!!.ingredients.joinToString(", "),
+                                        onValueChange = {
+                                            e = e!!.copy(
+                                                ingredients = it
+                                                    .split(",")
+                                                    .map { s -> s.trim() }
+                                                    .filter { s -> s.isNotBlank() }
+                                            )
+                                        }
+                                    )
+                                }
+
+                                item {
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                }
+                            }
                         }
+
 
                         message?.let { uiMessage ->
                             val isError = uiMessage.type == MessageType.ERROR
@@ -184,8 +245,6 @@ fun AdminEditMenuScreen(
                 }
             }
         }
-
-        /* ---------------- BOTTOM ACTIONS ---------------- */
 
         Row(
             modifier = Modifier

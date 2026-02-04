@@ -12,8 +12,12 @@ data class Menu(
     val category: MenuCategory = MenuCategory.MAIN,
     val diet: Diet = Diet.ANY,
     val spiciness: Spiciness = Spiciness.ANY,
-    val isAvailable: Boolean = true,
 
+    val preparationTime: String = "",
+    val servingSize: String = "",
+    val ingredients: List<String> = emptyList(),
+
+    val isAvailable: Boolean = true,
     val createdAt: Long = System.currentTimeMillis(),
     val updatedAt: Long? = null,
 )

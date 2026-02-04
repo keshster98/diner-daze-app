@@ -21,4 +21,8 @@ sealed class Screen {
     @Serializable object AdminAddPost : Screen()
     @Serializable object AdminEditPost : Screen()
     @Serializable object PostDetails : Screen()
+    @Serializable object PendingDeletion : Screen()
+    @Serializable object AdminDeletionRequests : Screen()
+    @Serializable object Cart : Screen()
+    @Serializable object MenuDetails : Screen()
 }

@@ -48,8 +48,6 @@ fun AdminEditPostScreen(
 
     Column(modifier = Modifier.fillMaxSize()) {
 
-        /* ---------------- TOP BAR ---------------- */
-
         TopAppBar(
             title = { Text("Edit Post") },
             navigationIcon = {
@@ -58,8 +56,6 @@ fun AdminEditPostScreen(
                 }
             }
         )
-
-        /* ---------------- CONTENT ---------------- */
 
         Box(
             modifier = Modifier
@@ -145,8 +141,6 @@ fun AdminEditPostScreen(
                 }
             }
         }
-
-        /* ---------------- BOTTOM ACTIONS ---------------- */
 
         Row(
             modifier = Modifier

@@ -15,7 +15,6 @@ import androidx.navigation.NavHostController
 import com.keshen.dinerdazeapp.ui.components.FilterChipsRow
 import com.keshen.dinerdazeapp.ui.components.UserRowCard
 import com.keshen.dinerdazeapp.ui.navigation.Screen
-import com.keshen.dinerdazeapp.ui.screens.admin.user.AdminTotalUsersViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,8 +51,6 @@ fun AdminTotalUsersScreen(
                 .fillMaxSize()
         ) {
 
-            /* ---------------- SEARCH ---------------- */
-
             OutlinedTextField(
                 value = search,
                 onValueChange = viewModel::onSearchChange,
@@ -63,8 +60,6 @@ fun AdminTotalUsersScreen(
             )
 
             Spacer(Modifier.height(12.dp))
-
-            /* ---------------- FILTER CHIPS ---------------- */
 
             FilterChipsRow(
                 selectedGender = gender,
@@ -76,8 +71,6 @@ fun AdminTotalUsersScreen(
             )
 
             Spacer(Modifier.height(16.dp))
-
-            /* ---------------- CONTENT ---------------- */
 
             when {
                 isLoading -> {

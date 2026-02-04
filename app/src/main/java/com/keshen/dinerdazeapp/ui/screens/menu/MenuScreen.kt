@@ -1,36 +1,31 @@
 package com.keshen.dinerdazeapp.ui.screens.menu
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.keshen.dinerdazeapp.ui.components.MenuFilterChips
 import com.keshen.dinerdazeapp.ui.components.MenuGridCard
+import com.keshen.dinerdazeapp.ui.navigation.Screen
+import com.keshen.dinerdazeapp.ui.screens.cart.CartViewModel
 
 @Composable
 fun MenuScreen(
-    viewModel: MenuViewModel = hiltViewModel()
+    navController: NavController,
+    viewModel: MenuViewModel = hiltViewModel(),
+    cartViewModel: CartViewModel
 ) {
+    val isLoggedIn by viewModel.isLoggedIn.collectAsState()
+
     val menus by viewModel.menus.collectAsState(initial = emptyList())
+
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.error.collectAsState()
 
@@ -39,13 +34,13 @@ fun MenuScreen(
     val diet by viewModel.diet.collectAsState()
     val spiciness by viewModel.spiciness.collectAsState()
 
+    val cartItems by cartViewModel.cartItems.collectAsState()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-
-        /* ---------- SEARCH ---------- */
 
         OutlinedTextField(
             value = search,
@@ -57,8 +52,6 @@ fun MenuScreen(
 
         Spacer(Modifier.height(12.dp))
 
-        /* ---------- FILTER CHIPS ---------- */
-
         MenuFilterChips(
             selectedCategory = category,
             selectedDiet = diet,
@@ -69,8 +62,6 @@ fun MenuScreen(
         )
 
         Spacer(Modifier.height(16.dp))
-
-        /* ---------- CONTENT ---------- */
 
         when {
             isLoading -> {
@@ -112,9 +103,22 @@ fun MenuScreen(
                     modifier = Modifier.fillMaxSize()
                 ) {
                     items(menus) { menu ->
+                        val quantity = cartItems[menu.uid]?.quantity ?: 0
+
                         MenuGridCard(
                             menu = menu,
-                            onClick = {}
+                            quantity = quantity,
+                            isLoggedIn = isLoggedIn,
+                            onIncrease = { cartViewModel.increase(menu) },
+                            onDecrease = { cartViewModel.decrease(menu) },
+                            onAddToCart = { },
+                            onClick = {
+                                navController.currentBackStackEntry
+                                    ?.savedStateHandle
+                                    ?.set("selectedMenuId", menu.uid)
+
+                                navController.navigate(Screen.MenuDetails)
+                            }
                         )
                     }
                 }

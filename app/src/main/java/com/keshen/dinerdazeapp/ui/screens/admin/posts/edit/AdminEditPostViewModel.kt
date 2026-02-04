@@ -33,8 +33,6 @@ class AdminEditPostViewModel @Inject constructor(
     private val _message = MutableStateFlow<UiMessage?>(null)
     val message = _message.asStateFlow()
 
-    /* ---------------- LOAD ---------------- */
-
     fun loadPost(postId: String) {
         viewModelScope.launch {
             _isLoading.value = true
@@ -53,8 +51,6 @@ class AdminEditPostViewModel @Inject constructor(
         }
     }
 
-    /* ---------------- DIRTY CHECK ---------------- */
-
     fun isDirty(e: Post): Boolean {
         return originalPost?.let {
             e.title != it.title ||
@@ -62,8 +58,6 @@ class AdminEditPostViewModel @Inject constructor(
                     e.tag != it.tag
         } ?: false
     }
-
-    /* ---------------- UPDATE ---------------- */
 
     fun updatePost(e: Post, onSuccess: () -> Unit) {
         _isSaving.value = true
@@ -97,8 +91,6 @@ class AdminEditPostViewModel @Inject constructor(
             }
         }
     }
-
-    /* ---------------- VALIDATION ---------------- */
 
     private fun validate(post: Post) {
         if (

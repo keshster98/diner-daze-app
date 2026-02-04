@@ -33,8 +33,6 @@ class AdminEditMenuViewModel @Inject constructor(
     private val _message = MutableStateFlow<UiMessage?>(null)
     val message = _message.asStateFlow()
 
-    /* ---------------- LOAD ---------------- */
-
     fun loadMenu(menuId: String) {
         viewModelScope.launch {
             _isLoading.value = true
@@ -53,8 +51,6 @@ class AdminEditMenuViewModel @Inject constructor(
         }
     }
 
-    /* ---------------- DIRTY CHECK ---------------- */
-
     fun isDirty(e: Menu): Boolean {
         return originalMenu?.let {
             e.name != it.name ||
@@ -63,11 +59,12 @@ class AdminEditMenuViewModel @Inject constructor(
                     e.category != it.category ||
                     e.diet != it.diet ||
                     e.spiciness != it.spiciness ||
+                    e.preparationTime != it.preparationTime ||
+                    e.servingSize != it.servingSize ||
+                    e.ingredients != it.ingredients ||
                     e.isAvailable != it.isAvailable
         } ?: false
     }
-
-    /* ---------------- UPDATE ---------------- */
 
     fun updateMenu(e: Menu, onSuccess: () -> Unit) {
         _isSaving.value = true
@@ -85,6 +82,9 @@ class AdminEditMenuViewModel @Inject constructor(
                     category = e.category,
                     diet = e.diet,
                     spiciness = e.spiciness,
+                    preparationTime = e.preparationTime,
+                    servingSize = e.servingSize,
+                    ingredients = e.ingredients,
                     isAvailable = e.isAvailable
                 )
 
@@ -105,14 +105,15 @@ class AdminEditMenuViewModel @Inject constructor(
         }
     }
 
-    /* ---------------- VALIDATION ---------------- */
-
     private fun validate(menu: Menu) {
         if (
             menu.name.isBlank() ||
-            menu.description.isBlank()
+            menu.description.isBlank() ||
+            menu.preparationTime.isBlank() ||
+            menu.servingSize.isBlank() ||
+            menu.ingredients.isEmpty()
         ) {
-            throw ValidationException("Name and description cannot be empty")
+            throw ValidationException("All fields must be filled")
         }
 
         if (menu.price <= 0.0) {

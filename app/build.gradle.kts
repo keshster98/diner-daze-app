@@ -104,4 +104,7 @@ dependencies {
     // Image Handling
     implementation("io.coil-kt:coil-compose:2.7.0")
     implementation("io.coil-kt.coil3:coil-compose:3.3.0")
+
+    // Deletion Request (Email Storage)
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
 }

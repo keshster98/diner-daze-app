@@ -17,9 +17,6 @@ import javax.inject.Inject
 class AdminPostViewModel @Inject constructor(
     private val postService: PostService
 ) : ViewModel() {
-
-    /* ---------- RAW DATA ---------- */
-
     private val _allPosts = MutableStateFlow<List<Post>>(emptyList())
 
     private val _isLoading = MutableStateFlow(true)
@@ -28,8 +25,6 @@ class AdminPostViewModel @Inject constructor(
     private val _error = MutableStateFlow<String?>(null)
     val error = _error.asStateFlow()
 
-    /* ---------- FILTER STATE ---------- */
-
     private val _searchQuery = MutableStateFlow("")
     private val _tag = MutableStateFlow<PostTag?>(null)
     private val _sort = MutableStateFlow(PostSort.LATEST_POST)
@@ -37,8 +32,6 @@ class AdminPostViewModel @Inject constructor(
     val searchQuery = _searchQuery.asStateFlow()
     val tag = _tag.asStateFlow()
     val sort = _sort.asStateFlow()
-
-    /* ---------- FILTERED RESULT ---------- */
 
     val posts = combine(
         _allPosts,
@@ -73,8 +66,6 @@ class AdminPostViewModel @Inject constructor(
             }
     }
 
-    /* ---------- INIT ---------- */
-
     init {
         loadPosts()
     }
@@ -106,8 +97,6 @@ class AdminPostViewModel @Inject constructor(
             }
         }
     }
-
-    /* ---------- UI EVENTS ---------- */
 
     fun onSearchChange(value: String) {
         _searchQuery.value = value

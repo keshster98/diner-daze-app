@@ -39,8 +39,6 @@ fun PostDetailsScreen(
 
     Column(modifier = Modifier.fillMaxSize()) {
 
-        /* ---------- TOP BAR ---------- */
-
         TopAppBar(
             title = { Text("Post Details") },
             navigationIcon = {

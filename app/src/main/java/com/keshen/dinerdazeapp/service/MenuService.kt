@@ -60,6 +60,9 @@ class MenuService(
         category: MenuCategory,
         diet: Diet,
         spiciness: Spiciness,
+        preparationTime: String,
+        servingSize: String,
+        ingredients: List<String>,
         isAvailable: Boolean
     ) {
         if (uid.isBlank()) {
@@ -76,6 +79,9 @@ class MenuService(
                     "category" to category.name,
                     "diet" to diet.name,
                     "spiciness" to spiciness.name,
+                    "preparationTime" to preparationTime,
+                    "servingSize" to servingSize,
+                    "ingredients" to ingredients,
                     "isAvailable" to isAvailable,
                     "updatedAt" to System.currentTimeMillis()
                 )

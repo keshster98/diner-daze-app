@@ -35,6 +35,9 @@ class AdminAddMenuViewModel @Inject constructor(
         category: MenuCategory,
         diet: Diet,
         spiciness: Spiciness,
+        preparationTime: String,
+        servingSize: String,
+        ingredientsRaw: String,
         onSuccess: () -> Unit
     ) {
         _message.value = null
@@ -42,7 +45,19 @@ class AdminAddMenuViewModel @Inject constructor(
 
         viewModelScope.launch {
             runCatching {
-                val parsedPrice = validate(name, description, price)
+                val parsedPrice = validate(
+                    name,
+                    description,
+                    price,
+                    preparationTime,
+                    servingSize,
+                    ingredientsRaw
+                )
+
+                val ingredients = ingredientsRaw
+                    .split(",")
+                    .map { it.trim() }
+                    .filter { it.isNotBlank() }
 
                 val menu = Menu(
                     uid = "",
@@ -52,6 +67,9 @@ class AdminAddMenuViewModel @Inject constructor(
                     category = category,
                     diet = diet,
                     spiciness = spiciness,
+                    preparationTime = preparationTime,
+                    servingSize = servingSize,
+                    ingredients = ingredients,
                     isAvailable = true,
                     createdAt = System.currentTimeMillis(),
                     updatedAt = null
@@ -76,10 +94,20 @@ class AdminAddMenuViewModel @Inject constructor(
     private fun validate(
         name: String,
         description: String,
-        price: String
+        price: String,
+        preparationTime: String,
+        servingSize: String,
+        ingredients: String
     ): Double {
-        if (name.isBlank() || description.isBlank() || price.isBlank()) {
-            throw ValidationException("Name, description and price must be filled")
+        if (
+            name.isBlank() ||
+            description.isBlank() ||
+            price.isBlank() ||
+            preparationTime.isBlank() ||
+            servingSize.isBlank() ||
+            ingredients.isBlank()
+        )  {
+            throw ValidationException("Please fill in all values")
         }
 
         return price.toDoubleOrNull()

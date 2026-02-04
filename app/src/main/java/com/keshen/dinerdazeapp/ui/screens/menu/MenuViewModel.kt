@@ -2,18 +2,12 @@ package com.keshen.dinerdazeapp.ui.screens.menu
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.keshen.dinerdazeapp.data.model.Diet
-import com.keshen.dinerdazeapp.data.model.Menu
-import com.keshen.dinerdazeapp.data.model.MenuCategory
-import com.keshen.dinerdazeapp.data.model.Spiciness
-import com.keshen.dinerdazeapp.data.model.User
+import com.keshen.dinerdazeapp.data.model.*
 import com.keshen.dinerdazeapp.service.AuthService
 import com.keshen.dinerdazeapp.service.MenuService
 import com.keshen.dinerdazeapp.service.UserProfileService
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -22,9 +16,11 @@ class MenuViewModel @Inject constructor(
     private val menuService: MenuService,
     private val authService: AuthService,
     private val profileService: UserProfileService
-): ViewModel() {
+) : ViewModel() {
 
-    /* ---------- RAW DATA ---------- */
+    private val _isLoggedIn = MutableStateFlow(authService.isLoggedIn())
+    val isLoggedIn = _isLoggedIn.asStateFlow()
+
 
     private val _allMenus = MutableStateFlow<List<Menu>>(emptyList())
 
@@ -33,8 +29,6 @@ class MenuViewModel @Inject constructor(
 
     private val _error = MutableStateFlow<String?>(null)
     val error = _error.asStateFlow()
-
-    /* ---------- FILTER STATE ---------- */
 
     private val _searchQuery = MutableStateFlow("")
     private val _category = MutableStateFlow<MenuCategory?>(null)
@@ -46,8 +40,6 @@ class MenuViewModel @Inject constructor(
     val diet = _diet.asStateFlow()
     val spiciness = _spiciness.asStateFlow()
 
-    /* ---------- FILTERED RESULT ---------- */
-
     val menus = combine(
         _allMenus,
         _searchQuery,
@@ -55,34 +47,25 @@ class MenuViewModel @Inject constructor(
         _diet,
         _spiciness
     ) { menus, query, category, diet, spiciness ->
-
         menus.filter { menu ->
-
             val matchesSearch =
-                query.isBlank() ||
-                        menu.name.contains(query, ignoreCase = true)
+                query.isBlank() || menu.name.contains(query, ignoreCase = true)
 
             val matchesCategory =
                 category == null || menu.category == category
 
             val matchesDiet =
-                diet == null ||
-                        menu.diet == Diet.ANY ||
-                        menu.diet == diet
+                diet == null || menu.diet == Diet.ANY || menu.diet == diet
 
             val matchesSpiciness =
-                spiciness == null ||
-                        menu.spiciness == Spiciness.ANY ||
-                        menu.spiciness == spiciness
+                spiciness == null || menu.spiciness == Spiciness.ANY || menu.spiciness == spiciness
 
             matchesSearch &&
                     matchesCategory &&
                     matchesDiet &&
-                    matchesSpiciness &&
-                    menu.isAvailable
+                    matchesSpiciness
         }
     }
-
 
     init {
         loadMenus()
@@ -92,7 +75,6 @@ class MenuViewModel @Inject constructor(
     private fun loadMenus() {
         viewModelScope.launch {
             _isLoading.value = true
-
             runCatching {
                 menuService.getAllMenu()
             }.onSuccess {
@@ -100,12 +82,9 @@ class MenuViewModel @Inject constructor(
             }.onFailure {
                 _error.value = it.message ?: "Failed to load menu"
             }
-
             _isLoading.value = false
         }
     }
-
-    /* ---------- UI EVENTS ---------- */
 
     fun onSearchChange(value: String) {
         _searchQuery.value = value
@@ -126,9 +105,7 @@ class MenuViewModel @Inject constructor(
     private fun loadUserPreferences() {
         viewModelScope.launch {
             if (!authService.isLoggedIn()) return@launch
-
             val uid = authService.uid()
-
             runCatching {
                 profileService.getProfile(uid)
             }.onSuccess { user ->
@@ -137,12 +114,8 @@ class MenuViewModel @Inject constructor(
         }
     }
 
-
-    fun applyUserPreferences(user: User) {
-        _diet.value =
-            if (user.diet == Diet.ANY) null else user.diet
-
-        _spiciness.value =
-            if (user.spiciness == Spiciness.ANY) null else user.spiciness
+    private fun applyUserPreferences(user: User) {
+        _diet.value = if (user.diet == Diet.ANY) null else user.diet
+        _spiciness.value = if (user.spiciness == Spiciness.ANY) null else user.spiciness
     }
 }

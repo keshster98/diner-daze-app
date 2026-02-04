@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.keshen.dinerdazeapp.core.utils.MessageType
 import com.keshen.dinerdazeapp.core.utils.UiMessage
 import com.keshen.dinerdazeapp.service.AuthService
+import com.keshen.dinerdazeapp.service.UserProfileService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,7 +15,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
-    private val authService: AuthService
+    private val authService: AuthService,
+    private val profileService: UserProfileService
 ) : ViewModel() {
 
     private val _isSigningUp = MutableStateFlow(false)
@@ -62,6 +64,13 @@ class SignUpViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
             runCatching {
+                val pending = profileService.isEmailPendingDeletion(email)
+                if (pending) {
+                    throw IllegalStateException(
+                        "This email is pending deletion. Please wait until the admin completes deletion."
+                    )
+                }
+
                 authService.signUp(email, password)
             }.onSuccess {
                 _message.value = UiMessage(

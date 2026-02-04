@@ -57,6 +57,8 @@ fun RegistrationFormScreen(
     val isSubmitting by viewModel.isSubmitting.collectAsState()
     val message by viewModel.message.collectAsState()
 
+    val hideActions = message?.type == MessageType.SUCCESS
+
     LazyColumn(
         modifier = Modifier.fillMaxWidth().padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -156,45 +158,47 @@ fun RegistrationFormScreen(
         }
 
         item {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                OutlinedButton(
-                    modifier = Modifier.weight(1f),
-                    onClick = {
-                        viewModel.logout()
-                        onLoggedOut()
-                    },
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = Color(0xFFB56576)
-                    )
+            if (!hideActions) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Text("Log Out")
-                }
-
-                Button(
-                    modifier = Modifier.weight(1f),
-                    enabled = !isSubmitting,
-                    onClick = {
-
-                        val user = User(
-                            uid = uid,
-                            firstName = firstName,
-                            lastName = lastName,
-                            gender = gender ?: Gender.PREFER_NOT_TO_SAY,
-                            email = email,
-                            phone = phone,
-                            diet = diet ?: Diet.ANY,
-                            spiciness = spiciness ?: Spiciness.ANY,
-                            profileFilled = true
+                    OutlinedButton(
+                        modifier = Modifier.weight(1f),
+                        onClick = {
+                            viewModel.logout()
+                            onLoggedOut()
+                        },
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = Color(0xFFB56576)
                         )
-
-                        viewModel.submitRegistration(user, onCompleted)
+                    ) {
+                        Text("Log Out")
                     }
-                )
-                {
-                    Text("Submit")
+
+                    Button(
+                        modifier = Modifier.weight(1f),
+                        enabled = !isSubmitting,
+                        onClick = {
+
+                            val user = User(
+                                uid = uid,
+                                firstName = firstName,
+                                lastName = lastName,
+                                gender = gender ?: Gender.PREFER_NOT_TO_SAY,
+                                email = email,
+                                phone = phone,
+                                diet = diet ?: Diet.ANY,
+                                spiciness = spiciness ?: Spiciness.ANY,
+                                profileFilled = true
+                            )
+
+                            viewModel.submitRegistration(user, onCompleted)
+                        }
+                    )
+                    {
+                        Text("Submit")
+                    }
                 }
             }
         }

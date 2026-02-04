@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -59,7 +58,6 @@ fun AdminScreen(
                         )
                     }
 
-                    // Future expansion row
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
                         modifier = Modifier.fillMaxWidth()
@@ -71,9 +69,9 @@ fun AdminScreen(
                         )
 
                         DashboardTile(
-                            title = "—",
+                            title = "Deletion Requests",
                             modifier = Modifier.weight(1f),
-                            enabled = false
+                            onClick = { navController.navigate(Screen.AdminDeletionRequests) }
                         )
                     }
                 }

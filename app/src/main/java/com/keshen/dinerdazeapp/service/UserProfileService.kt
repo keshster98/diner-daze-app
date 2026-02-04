@@ -7,7 +7,6 @@ import com.keshen.dinerdazeapp.data.model.Role
 import com.keshen.dinerdazeapp.data.model.Spiciness
 import com.keshen.dinerdazeapp.data.model.User
 import kotlinx.coroutines.tasks.await
-import kotlin.text.get
 
 class UserProfileService(
     private val db: FirebaseFirestore
@@ -95,6 +94,19 @@ class UserProfileService(
             )
             .await()
     }
+    suspend fun requestAccountDeletion(uid: String) {
+        db.collection("users")
+            .document(uid)
+            .update(
+                mapOf(
+                    "updatedAt" to System.currentTimeMillis(),
+                    "requestDelete" to true,
+                    "deleteRequestedAt" to System.currentTimeMillis(),
+                    "profileFilled" to false
+                )
+            )
+            .await()
+    }
 
     // Admin: fetch only users who requested deletion
     suspend fun getDeletionRequests(): List<User> {
@@ -127,5 +139,21 @@ class UserProfileService(
             .await()
 
         return !snapshot.isEmpty
+    }
+
+    suspend fun doesUserExistByEmail(email: String): Boolean {
+        val snapshot = db.collection("users")
+            .whereEqualTo("email", email)
+            .get()
+            .await()
+
+        return !snapshot.isEmpty
+    }
+
+    suspend fun deleteUserDocument(uid: String) {
+        db.collection("users")
+            .document(uid)
+            .delete()
+            .await()
     }
 }
