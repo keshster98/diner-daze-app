@@ -68,11 +68,15 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.material3)
+    implementation(libs.androidx.compose.foundation.layout)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
     // Firebase
     implementation(libs.firebase.firestore)
+    implementation(platform("com.google.firebase:firebase-bom:34.7.0"))
+    implementation("com.google.firebase:firebase-auth")
 
     // Testing
     testImplementation(libs.junit)
@@ -100,4 +104,7 @@ dependencies {
     // Image Handling
     implementation("io.coil-kt:coil-compose:2.7.0")
     implementation("io.coil-kt.coil3:coil-compose:3.3.0")
+
+    // Deletion Request (Email Storage)
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
 }
