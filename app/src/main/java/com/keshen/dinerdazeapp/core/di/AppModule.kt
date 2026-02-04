@@ -4,6 +4,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.keshen.dinerdazeapp.service.AuthService
 import com.keshen.dinerdazeapp.service.MenuService
+import com.keshen.dinerdazeapp.service.PostService
 import com.keshen.dinerdazeapp.service.UserProfileService
 import dagger.Module
 import dagger.Provides
@@ -45,4 +46,11 @@ object AppModule {
         firestore: FirebaseFirestore
     ): MenuService =
         MenuService(firestore)
+
+    @Provides
+    @Singleton
+    fun providePostService(
+        firestore: FirebaseFirestore
+    ): PostService =
+        PostService(firestore)
 }

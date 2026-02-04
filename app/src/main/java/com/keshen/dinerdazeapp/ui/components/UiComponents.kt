@@ -8,10 +8,15 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AssistChip
@@ -35,11 +40,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.keshen.dinerdazeapp.data.model.Diet
 import com.keshen.dinerdazeapp.data.model.Gender
 import com.keshen.dinerdazeapp.data.model.Menu
 import com.keshen.dinerdazeapp.data.model.MenuCategory
+import com.keshen.dinerdazeapp.data.model.Post
+import com.keshen.dinerdazeapp.data.model.PostSort
+import com.keshen.dinerdazeapp.data.model.PostTag
 import com.keshen.dinerdazeapp.data.model.Spiciness
 import com.keshen.dinerdazeapp.data.model.User
 
@@ -380,7 +389,6 @@ fun MenuFilterChips(
     onSpicinessSelected: (Spiciness?) -> Unit,
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(12.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
 
@@ -414,6 +422,8 @@ fun MenuFilterChips(
             }
         }
 
+        Spacer(modifier = Modifier.height(6.dp))
+
         /* -------- DIET -------- */
 
         Text(
@@ -422,7 +432,10 @@ fun MenuFilterChips(
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
 
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
             Diet.entries
                 .filter { it != Diet.ANY }
                 .forEach { diet ->
@@ -447,6 +460,8 @@ fun MenuFilterChips(
                 }
         }
 
+        Spacer(modifier = Modifier.height(6.dp))
+
         /* -------- SPICINESS -------- */
 
         Text(
@@ -455,7 +470,10 @@ fun MenuFilterChips(
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
 
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
             Spiciness.entries
                 .filter { it != Spiciness.ANY }
                 .forEach { spiciness ->
@@ -578,6 +596,115 @@ fun MenuGridCard(
                 style = MaterialTheme.typography.titleSmall,
                 color = MaterialTheme.colorScheme.primary
             )
+        }
+    }
+}
+
+@Composable
+fun PostTagFilterChips(
+    selectedTag: PostTag?,
+    onTagSelected: (PostTag?) -> Unit
+) {
+    LazyRow(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        items(PostTag.entries.toTypedArray()) { tag ->
+            FilterChip(
+                selected = selectedTag == tag,
+                onClick = {
+                    onTagSelected(
+                        if (selectedTag == tag) null else tag
+                    )
+                },
+                label = {
+                    Text(
+                        text = tag.name.lowercase()
+                            .replaceFirstChar { it.uppercase() },
+                        style = MaterialTheme.typography.labelLarge
+                    )
+                }
+            )
+        }
+    }
+}
+
+@Composable
+fun PostSortFilterChips(
+    selectedSort: PostSort,
+    onSortSelected: (PostSort) -> Unit
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        PostSort.entries.forEach { sort ->
+            FilterChip(
+                selected = selectedSort == sort,
+                onClick = { onSortSelected(sort) },
+                label = {
+                    Text(
+                        text = when (sort) {
+                            PostSort.LATEST_POST -> "Latest Post"
+                            PostSort.LATEST_UPDATE -> "Latest Update"
+                            PostSort.EARLIEST_POST -> "Earliest Post"
+                        },
+                        style = MaterialTheme.typography.labelLarge
+                    )
+                }
+            )
+        }
+    }
+}
+
+@Composable
+fun AdminPostRowCard(
+    post: Post,
+    onClick: () -> Unit,
+    onDelete: () -> Unit
+) {
+    Card(
+        onClick = onClick,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = post.title,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    style = MaterialTheme.typography.titleMedium
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Text(
+                    text = post.description,
+                    maxLines = 3,
+                    overflow = TextOverflow.Ellipsis,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+            Spacer(modifier = Modifier.width(12.dp))
+
+            IconButton(
+                onClick = onDelete
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Delete Post"
+                )
+            }
         }
     }
 }
