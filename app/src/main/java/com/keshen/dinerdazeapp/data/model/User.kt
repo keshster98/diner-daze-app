@@ -17,11 +17,15 @@ data class User (
 
     // Extra details
     val diet: Diet = Diet.ANY,
-    val spiciness: Spiciness = Spiciness.ANY
+    val spiciness: Spiciness = Spiciness.ANY,
+
+    // Deletion
+    val requestDelete: Boolean = false,
+    val deleteRequestedAt: Long? = null
 )
 
 enum class Role {
-    USER, CHEF, ADMIN
+    USER, ADMIN
 }
 
 enum class Gender {

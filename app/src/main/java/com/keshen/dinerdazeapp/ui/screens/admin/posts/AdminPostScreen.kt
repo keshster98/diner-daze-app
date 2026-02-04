@@ -35,6 +35,33 @@ fun AdminPostScreen(
     val selectedTag by viewModel.tag.collectAsState()
     val selectedSort by viewModel.sort.collectAsState()
 
+    val postAdded =
+        navController.currentBackStackEntry
+            ?.savedStateHandle
+            ?.getStateFlow("post_added", false)
+            ?.collectAsState()
+
+    val postEdited =
+        navController.currentBackStackEntry
+            ?.savedStateHandle
+            ?.getStateFlow("post_edited", false)
+            ?.collectAsState()
+
+    LaunchedEffect(postAdded?.value, postEdited?.value) {
+        if (postAdded?.value == true || postEdited?.value == true) {
+
+            viewModel.reloadPosts()
+
+            navController.currentBackStackEntry
+                ?.savedStateHandle
+                ?.set("post_added", false)
+
+            navController.currentBackStackEntry
+                ?.savedStateHandle
+                ?.set("post_edited", false)
+        }
+    }
+
     Box(modifier = Modifier.fillMaxSize()) {
 
         /* ---------- TOP BAR ---------- */
@@ -51,7 +78,7 @@ fun AdminPostScreen(
             },
             actions = {
                 IconButton(
-                    onClick = {}
+                    onClick = { navController.navigate(Screen.AdminAddPost) }
                 ) {
                     Icon(
                         Icons.Default.Add,
@@ -157,10 +184,10 @@ fun AdminPostScreen(
                                         ?.savedStateHandle
                                         ?.set("selectedPostId", post.uid)
 
-                                    // navController.navigate(Screen.AdminEditPost)
+                                    navController.navigate(Screen.AdminEditPost)
                                 },
                                 onDelete = {
-                                    // TODO: delete later
+                                    viewModel.deletePost(post.uid)
                                 }
                             )
                         }

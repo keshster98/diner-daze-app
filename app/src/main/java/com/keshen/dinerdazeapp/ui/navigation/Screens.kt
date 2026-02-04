@@ -4,8 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 sealed class Screen {
-    @Serializable object Main: Screen()
-    @Serializable object Home: Screen()
+    @Serializable object Post: Screen()
     @Serializable object SignIn: Screen()
     @Serializable object SignUp: Screen()
     @Serializable object RegistrationForm: Screen()
@@ -19,4 +18,7 @@ sealed class Screen {
     @Serializable object AdminAddMenu : Screen()
     @Serializable object AdminEditMenu : Screen()
     @Serializable object AdminPosts : Screen()
+    @Serializable object AdminAddPost : Screen()
+    @Serializable object AdminEditPost : Screen()
+    @Serializable object PostDetails : Screen()
 }

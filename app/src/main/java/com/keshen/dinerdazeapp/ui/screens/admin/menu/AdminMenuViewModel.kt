@@ -119,7 +119,6 @@ class AdminMenuViewModel @Inject constructor(
             runCatching {
                 menuService.deleteMenu(menuId)
             }.onSuccess {
-                // 🔥 instant UI update
                 _allMenus.value = _allMenus.value.filterNot { it.uid == menuId }
             }.onFailure {
                 _error.value = it.message ?: "Failed to delete menu"

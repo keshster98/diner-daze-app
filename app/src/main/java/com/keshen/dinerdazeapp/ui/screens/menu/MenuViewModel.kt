@@ -125,6 +125,8 @@ class MenuViewModel @Inject constructor(
 
     private fun loadUserPreferences() {
         viewModelScope.launch {
+            if (!authService.isLoggedIn()) return@launch
+
             val uid = authService.uid()
 
             runCatching {
@@ -134,6 +136,7 @@ class MenuViewModel @Inject constructor(
             }
         }
     }
+
 
     fun applyUserPreferences(user: User) {
         _diet.value =

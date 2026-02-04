@@ -7,6 +7,7 @@ import com.keshen.dinerdazeapp.data.model.Role
 import com.keshen.dinerdazeapp.data.model.Spiciness
 import com.keshen.dinerdazeapp.data.model.User
 import kotlinx.coroutines.tasks.await
+import kotlin.text.get
 
 class UserProfileService(
     private val db: FirebaseFirestore
@@ -93,5 +94,38 @@ class UserProfileService(
                 )
             )
             .await()
+    }
+
+    // Admin: fetch only users who requested deletion
+    suspend fun getDeletionRequests(): List<User> {
+        return db.collection("users")
+            .whereEqualTo("requestDelete", true)
+            .get()
+            .await()
+            .documents
+            .mapNotNull { doc ->
+                doc.toObject(User::class.java)?.copy(uid = doc.id)
+            }
+    }
+
+    // Used to block sign-in/sign-up attempts (restriction)
+    suspend fun isDeletionRequested(uid: String): Boolean {
+        val doc = db.collection("users")
+            .document(uid)
+            .get()
+            .await()
+
+        return doc.exists() && doc.getBoolean("requestDelete") == true
+    }
+
+    // Used to block re-registration using same email (restriction)
+    suspend fun isEmailPendingDeletion(email: String): Boolean {
+        val snapshot = db.collection("users")
+            .whereEqualTo("email", email)
+            .whereEqualTo("requestDelete", true)
+            .get()
+            .await()
+
+        return !snapshot.isEmpty
     }
 }

@@ -4,8 +4,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AdminPanelSettings
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Login
+import androidx.compose.material.icons.filled.Newspaper
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.RestaurantMenu
 import androidx.compose.material.icons.filled.Settings
@@ -33,12 +33,15 @@ import com.keshen.dinerdazeapp.ui.screens.admin.menu.edit.AdminEditMenuScreen
 import com.keshen.dinerdazeapp.ui.screens.admin.menu.AdminMenuScreen
 import com.keshen.dinerdazeapp.ui.screens.admin.AdminScreen
 import com.keshen.dinerdazeapp.ui.screens.admin.posts.AdminPostScreen
+import com.keshen.dinerdazeapp.ui.screens.admin.posts.add.AdminAddPostScreen
+import com.keshen.dinerdazeapp.ui.screens.admin.posts.edit.AdminEditPostScreen
 import com.keshen.dinerdazeapp.ui.screens.admin.user.AdminTotalUsersScreen
 import com.keshen.dinerdazeapp.ui.screens.admin.user.edit.AdminUserEditScreen
 import com.keshen.dinerdazeapp.ui.screens.auth.SignInScreen
 import com.keshen.dinerdazeapp.ui.screens.auth.SignUpScreen
-import com.keshen.dinerdazeapp.ui.screens.home.HomeScreen
+import com.keshen.dinerdazeapp.ui.screens.news.PostScreen
 import com.keshen.dinerdazeapp.ui.screens.menu.MenuScreen
+import com.keshen.dinerdazeapp.ui.screens.news.PostDetailsScreen
 import com.keshen.dinerdazeapp.ui.screens.profile.ProfileScreen
 import com.keshen.dinerdazeapp.ui.screens.registration.RegistrationFormScreen
 import com.keshen.dinerdazeapp.ui.screens.settings.SettingsScreen
@@ -73,14 +76,14 @@ fun AppNav(
 
                 // Home Tab
                 NavigationBarItem(
-                    selected = currentRoute == Screen.Home::class.qualifiedName,
+                    selected = currentRoute == Screen.Post::class.qualifiedName,
                     onClick = {
-                        navController.navigate(Screen.Home) {
+                        navController.navigate(Screen.Post) {
                             launchSingleTop = true
                         }
                     },
-                    icon = { Icon(Icons.Filled.Home, null) },
-                    label = { Text("Home") }
+                    icon = { Icon(Icons.Filled.Newspaper, null) },
+                    label = { Text("News") }
                 )
 
                 // Menu Tab
@@ -165,21 +168,16 @@ fun AppNav(
     ) { padding ->
         NavHost(
             navController = navController,
-            startDestination = Screen.Home,
+            startDestination = Screen.Post,
             modifier = Modifier.padding(padding)
         ) {
 
-            composable<Screen.Home> {
-                HomeScreen(
-                    authService = authService,
-                    onSignOutClick = {
-                        navController.navigate(Screen.SignIn) {
-                            popUpTo(Screen.Home) {
-                                inclusive = true
-                            }
-                        }
-                    }
-                )
+            composable<Screen.Post> {
+                PostScreen(navController)
+            }
+
+            composable<Screen.PostDetails> {
+                PostDetailsScreen(navController)
             }
 
             composable<Screen.Menu> {
@@ -190,7 +188,7 @@ fun AppNav(
                 SignInScreen(
                     onSuccess = { completed ->
                         if (completed) {
-                            navController.navigate(Screen.Home) {
+                            navController.navigate(Screen.Post) {
                                 popUpTo(Screen.SignIn) { inclusive = true }
                             }
                         } else {
@@ -220,7 +218,7 @@ fun AppNav(
                     onCompleted = {
                         isProfileFilled = true
 
-                        navController.navigate(Screen.Home) {
+                        navController.navigate(Screen.Post) {
                             popUpTo(Screen.RegistrationForm) { inclusive = true }
                         }
                     },
@@ -238,7 +236,7 @@ fun AppNav(
 
             composable<Screen.Admin> {
                 if (!isAdmin) {
-                    navController.navigate(Screen.Home) {
+                    navController.navigate(Screen.Post) {
                         popUpTo(Screen.Admin) { inclusive = true }
                     }
                     return@composable
@@ -253,7 +251,7 @@ fun AppNav(
             composable<Screen.Settings> {
                 SettingsScreen(
                     onLogout = {
-                        navController.navigate(Screen.Home) {
+                        navController.navigate(Screen.Post) {
                             popUpTo(Screen.Settings) { inclusive = true }
                         }
                     }
@@ -262,7 +260,7 @@ fun AppNav(
 
             composable<Screen.AdminTotalUsers> {
                 if (!isAdmin) {
-                    navController.navigate(Screen.Home) {
+                    navController.navigate(Screen.Post) {
                         popUpTo(Screen.AdminMenu) { inclusive = true }
                     }
                     return@composable
@@ -275,7 +273,7 @@ fun AppNav(
 
             composable<Screen.AdminUserEdit> {
                 if (!isAdmin) {
-                    navController.navigate(Screen.Home) {
+                    navController.navigate(Screen.Post) {
                         popUpTo(Screen.AdminMenu) { inclusive = true }
                     }
                     return@composable
@@ -288,7 +286,7 @@ fun AppNav(
 
             composable<Screen.AdminMenu> {
                 if (!isAdmin) {
-                    navController.navigate(Screen.Home) {
+                    navController.navigate(Screen.Post) {
                         popUpTo(Screen.AdminMenu) { inclusive = true }
                     }
                     return@composable
@@ -301,7 +299,7 @@ fun AppNav(
 
             composable<Screen.AdminAddMenu> {
                 if (!isAdmin) {
-                    navController.navigate(Screen.Home) {
+                    navController.navigate(Screen.Post) {
                         popUpTo(Screen.AdminAddMenu) { inclusive = true }
                     }
                     return@composable
@@ -314,7 +312,7 @@ fun AppNav(
 
             composable<Screen.AdminEditMenu> {
                 if (!isAdmin) {
-                    navController.navigate(Screen.Home) {
+                    navController.navigate(Screen.Post) {
                         popUpTo(Screen.AdminEditMenu) { inclusive = true }
                     }
                     return@composable
@@ -327,13 +325,39 @@ fun AppNav(
 
             composable<Screen.AdminPosts> {
                 if (!isAdmin) {
-                    navController.navigate(Screen.Home) {
+                    navController.navigate(Screen.Post) {
                         popUpTo(Screen.AdminPosts) { inclusive = true }
                     }
                     return@composable
                 }
 
                 AdminPostScreen(
+                    navController = navController
+                )
+            }
+
+            composable<Screen.AdminAddPost> {
+                if (!isAdmin) {
+                    navController.navigate(Screen.Post) {
+                        popUpTo(Screen.AdminAddPost) { inclusive = true }
+                    }
+                    return@composable
+                }
+
+                AdminAddPostScreen(
+                    navController = navController
+                )
+            }
+
+            composable<Screen.AdminEditPost> {
+                if (!isAdmin) {
+                    navController.navigate(Screen.Post) {
+                        popUpTo(Screen.AdminAddPost) { inclusive = true }
+                    }
+                    return@composable
+                }
+
+                AdminEditPostScreen(
                     navController = navController
                 )
             }

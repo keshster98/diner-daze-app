@@ -1,10 +1,10 @@
-package com.keshen.dinerdazeapp.ui.screens.admin.posts
+package com.keshen.dinerdazeapp.ui.screens.news
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.keshen.dinerdazeapp.data.model.Post
-import com.keshen.dinerdazeapp.data.model.PostTag
 import com.keshen.dinerdazeapp.data.model.PostSort
+import com.keshen.dinerdazeapp.data.model.PostTag
 import com.keshen.dinerdazeapp.service.PostService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,10 +14,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class AdminPostViewModel @Inject constructor(
+class PostViewModel @Inject constructor(
     private val postService: PostService
-) : ViewModel() {
-
+): ViewModel() {
     /* ---------- RAW DATA ---------- */
 
     private val _allPosts = MutableStateFlow<List<Post>>(emptyList())
@@ -95,18 +94,6 @@ class AdminPostViewModel @Inject constructor(
         }
     }
 
-    fun deletePost(postId: String) {
-        viewModelScope.launch {
-            runCatching {
-                postService.deletePost(postId)
-            }.onSuccess {
-                _allPosts.value = _allPosts.value.filterNot { it.uid == postId }
-            }.onFailure {
-                _error.value = it.message ?: "Failed to delete post"
-            }
-        }
-    }
-
     /* ---------- UI EVENTS ---------- */
 
     fun onSearchChange(value: String) {
@@ -119,9 +106,5 @@ class AdminPostViewModel @Inject constructor(
 
     fun onSortSelected(value: PostSort) {
         _sort.value = value
-    }
-
-    fun reloadPosts() {
-        loadPosts()
     }
 }
